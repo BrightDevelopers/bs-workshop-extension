@@ -1,0 +1,30 @@
+# General
+.env
+.envrc
+*~
+
+# Build artifacts
+bin/
+target/
+*.jar
+*.zip
+*.war
+
+# Java
+*.class
+*.log
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+
+# Node (if any tooling added)
+node_modules/
+dist/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
