@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrightSign Extension Workshop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0d1117;
+      color: #e6edf3;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #logo {
+      font-size: 1.2rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #f4801a;
+      margin-bottom: 3rem;
+    }
+
+    #message {
+      font-size: 3.5rem;
+      font-weight: 600;
+      text-align: center;
+      color: #e6edf3;
+      margin-bottom: 1.5rem;
+      min-height: 4.5rem;
+    }
+
+    #uptime {
+      font-size: 1.4rem;
+      color: #8b949e;
+      letter-spacing: 0.05em;
+    }
+
+    #status {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      font-size: 0.85rem;
+      color: #3fb950;
+      letter-spacing: 0.08em;
+    }
+
+    #status.error {
+      color: #f85149;
+    }
+  </style>
+</head>
+<body>
+  <div id="logo">BrightSign Extension Workshop</div>
+  <div id="message">Connecting to extension…</div>
+  <div id="uptime"></div>
+  <div id="status">●&nbsp;waiting</div>
+  <script src="./bundle.js"></script>
+  <script>window.main();</script>
+</body>
+</html>

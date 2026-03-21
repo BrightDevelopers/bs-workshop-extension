@@ -10,6 +10,9 @@ target/
 *.zip
 *.war
 
+# Downloaded JRE and packaging staging directory (re-created by make download-jre / make package)
+workshop/04-build-java/hello-extension/install/
+
 # Java
 *.class
 *.log

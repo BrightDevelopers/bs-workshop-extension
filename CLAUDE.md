@@ -461,7 +461,8 @@ help         # list targets (default)
 - [x] Module 10: Production
 - [x] Facilitator Guide
 - [x] Makefile (extension repo)
-- [ ] docker/Dockerfile — dev container for GHCR
+- [x] docker/Dockerfile — dev container for GHCR
+- [x] .github/workflows/docker-publish.yml — builds and pushes on merge to main and version tags
 - [ ] Module 1 README update — add container launch instructions (macOS + Windows)
-- [ ] workshop/html-app submodule — active development (separate repo)
-- [ ] Verify Java bsext_init JVM path against actual player model
+- [x] workshop/html-app submodule — content built (autorun.brs, index.html, index.js, webpack, Makefile)
+- [x] Java bsext_init — bundles Eclipse Temurin 11 JRE for linux/aarch64; no system Java required on player

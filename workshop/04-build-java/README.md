@@ -9,7 +9,7 @@
 - Write a bsext_init script for a Java extension
 - Verify the extension works locally before deploying to the player
 
-**Prerequisites:** Modules 1–3 complete. JDK 11+ and Maven 3.6+ verified.
+**Prerequisites:** Modules 1–3 complete. JDK 11+ and Maven 3.6+ verified (pre-installed in the workshop container).
 
 ---
 
@@ -128,7 +128,39 @@ The JVM calls shutdown hooks in response to SIGTERM and SIGINT. The hook logs `"
 
 ---
 
-## 4.4 Write the bsext_init Script
+## 4.4 Download the Bundled JRE
+
+BrightSign players do not have a system Java installation. The JRE must be bundled inside the extension's squashfs image alongside the JAR.
+
+The Makefile downloads Eclipse Temurin 11 JRE for `linux/aarch64` from Adoptium and places it in `install/jre/`. This only needs to happen once — the Makefile skips the download if `install/jre/` already exists.
+
+1. Download the JRE:
+   ```
+   $ make download-jre
+   ```
+   Expected output:
+   ```
+   Downloading Eclipse Temurin JRE 11 for linux/aarch64...
+   JRE installed at install/jre
+   ```
+   This downloads ~45MB and extracts to `install/jre/`. The download requires internet access.
+
+2. Verify:
+   ```
+   $ install/jre/bin/java -version
+   ```
+   Expected:
+   ```
+   openjdk version "11.x.x" ...
+   ```
+
+> **Note:** `install/jre/` is excluded from version control via `.gitignore`. It is re-downloaded by `make download-jre` on a fresh checkout. Do not commit it.
+
+> **Note:** The JRE is `linux/aarch64` — it only runs on ARM64 hardware (the BrightSign player). Running `install/jre/bin/java` on an x86 workstation will fail. Use the system `java` command for the local smoke test in section 4.6.
+
+---
+
+## 4.5 Write the bsext_init Script
 
 The player OS manages extensions using SysV-style init scripts. The `bsext_init` file is at the project root (not inside `src/`).
 
@@ -138,15 +170,21 @@ DAEMON_NAME="hello_extension"
 ```
 Must be lowercase with underscores. This name becomes the PID file path and appears in log messages. Dashes are not safe in all shell contexts — use underscores.
 
+**Bundled JRE path:**
+```sh
+EXTENSION_DIR="/var/volatile/bsext/${DAEMON_NAME}"
+JAVA_BIN="${EXTENSION_DIR}/jre/bin/java"
+JAR_PATH="${EXTENSION_DIR}/hello-extension-1.0.0.jar"
+```
+The extension is mounted read-only at `/var/volatile/bsext/hello_extension/`. The `jre/` directory inside that mount is the Temurin JRE bundled during packaging.
+
 **run_extension function:**
 ```sh
 run_extension() {
     exec "${JAVA_BIN}" -jar "${JAR_PATH}"
 }
 ```
-`exec` replaces the shell process with the JVM process. This means the PID in the PID file is the JVM's PID, not a shell wrapper. Signals sent to that PID go directly to the JVM and trigger the shutdown hook.
-
-> **Warning:** The path to `java` must match the JVM location on the player. `/usr/bin/java` is the default in `bsext_init`. Verify the correct path with your facilitator before deploying. An incorrect path produces a cryptic "file not found" error that does not mention Java.
+`exec` replaces the shell with the JVM process. Signals go directly to the JVM and trigger the shutdown hook. No shell wrapper remains in the process tree.
 
 **run target (foreground mode):**
 ```sh
@@ -154,11 +192,11 @@ run)
     run_extension
     ;;
 ```
-The `run` action runs the extension in the foreground with its output going directly to the terminal. Use this when SSH'd into the player to diagnose startup problems.
+Runs the extension in the foreground with output going directly to the terminal. Use this when SSH'd into the player to diagnose startup problems.
 
 ---
 
-## 4.5 Build
+## 4.6 Build
 
 1. From your project directory, run:
    ```
@@ -181,7 +219,7 @@ The `run` action runs the extension in the foreground with its output going dire
 
 ---
 
-## 4.6 Local Smoke Test
+## 4.7 Local Smoke Test
 
 Verify the extension satisfies the contract on your workstation before touching the player. This step catches the majority of problems before they become harder to debug on remote hardware.
 
@@ -223,19 +261,20 @@ Verify the extension satisfies the contract on your workstation before touching 
 > ```
 > Stop the conflicting process, then retry.
 
-> **Tip:** `make test-local` runs steps 1–4 automatically. It starts the extension, waits 3 seconds, curls the endpoint, and kills the process.
+> **Tip:** `make test-local` runs steps 1–4 automatically. It starts the extension, waits 2 seconds, curls the endpoint, and kills the process. Note: this uses the system `java` command, not the bundled ARM64 JRE — that is correct for local testing.
 
 ---
 
-## 4.7 What You Have
+## 4.8 What You Have
 
-After completing this module you have two files that Module 5 needs:
+After completing this module you have everything Module 5 needs:
 
-| File | Purpose |
+| Path | Purpose |
 |---|---|
-| `target/hello-extension-1.0.0.jar` | The self-contained extension binary |
+| `target/hello-extension-1.0.0.jar` | The self-contained extension JAR |
 | `bsext_init` | The init script the player OS uses to start and stop the extension |
+| `install/jre/` | Eclipse Temurin JRE 11 for linux/aarch64 — bundled with the extension |
 
-Module 5 is **identical regardless of language**. It picks up these two files from `install/`, adds `manifest.json`, and produces the ZIP that the player accepts. The packaging and deployment workflow does not change based on what is inside the JAR.
+Module 5 is **identical regardless of language**. It copies whatever is in `install/` into the squashfs image. The packaging and deployment workflow does not change based on what language produced the binary.
 
 Proceed to **[Module 5: Package the Extension](../../05-package/README.md)**.

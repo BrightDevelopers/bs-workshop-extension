@@ -25,6 +25,8 @@ The `common-scripts/` tools in the extension-template handle all of this. You do
 
 The player mounts the squashfs volume at boot. Your binary runs from that mount point. The filesystem is read-only at runtime; write to `/var/volatile/` for any runtime state.
 
+> **Note (Java variant):** The Java extension package includes a bundled JRE (~45MB extracted). The resulting squashfs image will be approximately 50–60MB — well under the 100MB limit. The packaging process is the same; the only difference is the size of `install/`.
+
 ---
 
 ## 5.2 Copy the Packaging Scripts

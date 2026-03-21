@@ -4,19 +4,19 @@ COMMON_SCRIPTS  := ../extension-template/examples/common-scripts
 JAR_NAME        := hello-extension-1.0.0.jar
 EXTENSION_NAME  := hello_extension
 
-.PHONY: help build package test-local clean
+.PHONY: help build download-jre package test-local clean
 
-## Print available targets
-help:
+help: ## Print available targets
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*##"}; {printf "  %-14s %s\n", $$1, $$2}'
 
-## Build the extension JAR
-build:
-	cd $(EXTENSION_DIR) && mvn clean package -q
+build: ## Build the extension JAR
+	$(MAKE) -C $(EXTENSION_DIR) build
 
-## Build and produce the deployable extension ZIP
-package: build
+download-jre: ## Download Temurin JRE 11 for linux/aarch64 (required for packaging)
+	$(MAKE) -C $(EXTENSION_DIR) download-jre
+
+package: download-jre ## Build JAR, bundle JRE, and produce the deployable extension ZIP
 	@if [ ! -d "$(COMMON_SCRIPTS)" ]; then \
 		echo ""; \
 		echo "ERROR: common-scripts not found at $(COMMON_SCRIPTS)"; \
@@ -25,23 +25,10 @@ package: build
 		echo ""; \
 		exit 1; \
 	fi
-	mkdir -p $(INSTALL_DIR)
-	cp $(EXTENSION_DIR)/target/$(JAR_NAME) $(INSTALL_DIR)/
-	cp $(EXTENSION_DIR)/bsext_init $(INSTALL_DIR)/
-	cd $(EXTENSION_DIR) && ../../$(COMMON_SCRIPTS)/pkg-dev.sh install lvm $(EXTENSION_NAME)
+	$(MAKE) -C $(EXTENSION_DIR) package
 
-## Build, run locally, curl the endpoint, then stop
-test-local: build
-	java -jar $(EXTENSION_DIR)/target/$(JAR_NAME) & \
-	BSX_PID=$$!; \
-	sleep 2; \
-	curl -sf http://localhost:8080/ ; \
-	CURL_EXIT=$$?; \
-	kill $$BSX_PID 2>/dev/null; \
-	exit $$CURL_EXIT
+test-local: build ## Build, run the extension locally, verify the HTTP endpoint, then stop
+	$(MAKE) -C $(EXTENSION_DIR) test-local
 
-## Remove build artifacts, install directory, and ZIP files
-clean:
-	cd $(EXTENSION_DIR) && mvn clean -q
-	rm -rf $(INSTALL_DIR)
-	rm -f $(EXTENSION_DIR)/$(EXTENSION_NAME)-*.zip
+clean: ## Remove build artifacts, install directory, and ZIP files
+	$(MAKE) -C $(EXTENSION_DIR) clean
