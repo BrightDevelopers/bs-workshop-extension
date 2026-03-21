@@ -119,15 +119,8 @@ Once inside the container:
 
 ```
 $ cd /workspace
-$ git clone --recurse-submodules https://github.com/BrightSign-Playground/bs-extension-workshop
+$ git clone https://github.com/BrightSign-Playground/bs-extension-workshop
 $ cd bs-extension-workshop
-```
-
-`--recurse-submodules` initializes `workshop/html-app/` automatically.
-
-If you cloned without the flag:
-```
-$ git submodule update --init --recursive
 ```
 
 ### Manual Tool Install (Fallback — No Container)
@@ -186,20 +179,15 @@ the workshop — which is the right problem to have.
 
 ---
 
-## Companion HTML App (Git Submodule)
+## Companion HTML App (Separate Repo)
 
 A standalone BrightSign HTML application that runs on the same player and interacts with
-the extension. It lives as a git submodule in `workshop/html-app/`, pointing to:
-https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
+the extension. It lives in its own repository:
 
-Active development happens in the submodule. After cloning this repo, initialize it:
-```
-git submodule update --init --recursive
-```
+**https://github.com/BrightSign-Playground/bs-extension-workshop-html-app**
 
-Changes to the HTML app are committed and pushed inside `workshop/html-app/` against the
-submodule's own repo. Changes to the submodule pointer (version bump) are committed in
-this repo.
+This repo contains no reference to it beyond this CLAUDE.md and the Module 9 README.
+Participants clone it independently during Module 9.
 
 ### Structural model: simple-gaze-detection-html
 
@@ -231,14 +219,14 @@ extension process (port 8080) ↔ BrightSign JS runtime ↔ HTML UI.
 ### HTML app layout
 
 ```
-workshop/html-app/          ← git submodule
+bs-extension-workshop-html-app/   ← separate repo
 ├── src/
-│   ├── autorun.brs         # BrightScript bootstrap
-│   ├── index.html          # UI template
-│   └── index.js            # fetch loop, DOM update
+│   ├── autorun.brs               # BrightScript bootstrap
+│   ├── index.html                # UI template
+│   └── index.js                  # fetch loop, DOM update
 ├── webpack.config.js
 ├── package.json
-├── Makefile                # prep / build / publish / clean
+├── Makefile                      # prep / build / publish / clean
 └── README.md
 ```
 
@@ -327,7 +315,8 @@ Learning objective: Execute the full change → rebuild → redeploy cycle.
 
 ### Module 9 — The HTML App (30 min)
 Learning objective: Build and deploy the HTML app that consumes the extension.
-- Clone the HTML app repo. `make prep && make build && make publish`.
+- Clone https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
+- `make prep && make build && make publish`.
 - Walk `src/autorun.brs`, `src/index.html`, `src/index.js` — same pattern as
   simple-gaze-detection-html.
 - Deploy `sd/` contents to SD card. Insert, boot, watch the UI pull from the extension.
@@ -352,7 +341,6 @@ Learning objective: Know what changes before shipping.
 ```
 /
 ├── CLAUDE.md                          ← this file
-├── .gitmodules                        ← declares workshop/html-app submodule
 ├── docs/
 │   ├── PRD.md                         ← original PRD (do not delete)
 │   └── DESIGN.md                      ← master design doc (create before building)
@@ -382,7 +370,6 @@ Learning objective: Know what changes before shipping.
 │   │   └── README.md
 │   ├── 09-html-app/
 │   │   └── README.md
-│   ├── html-app/                      ← git submodule (bs-extension-workshop-html-app)
 │   ├── 10-production/
 │   │   └── README.md
 │   └── cleanup/
@@ -464,5 +451,5 @@ help         # list targets (default)
 - [x] docker/Dockerfile — dev container for GHCR
 - [x] .github/workflows/docker-publish.yml — builds and pushes on merge to main and version tags
 - [ ] Module 1 README update — add container launch instructions (macOS + Windows)
-- [x] workshop/html-app submodule — content built (autorun.brs, index.html, index.js, webpack, Makefile)
+- [x] HTML app — lives at https://github.com/BrightSign-Playground/bs-extension-workshop-html-app (separate repo, no submodule)
 - [x] Java bsext_init — bundles Eclipse Temurin 11 JRE for linux/aarch64; no system Java required on player

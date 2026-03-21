@@ -16,16 +16,18 @@
 
 The player exposes two HTTP interfaces. They serve different roles and you will use both throughout the rest of the workshop.
 
-```
-BrightSign Player
-├── :8008  BrightSign Control API
-│           Install / start / stop / uninstall extensions
-│           Query player info, system status, logs
-│           Manage content
-│
-└── :8080  Your Extension's Server
-            Whatever HTTP interface your extension exposes
-            Only active when your extension is running
+```mermaid
+graph LR
+    ws["Your Workstation"]
+
+    subgraph player["BrightSign Player"]
+        api["port 8008\nControl API\ninstall · start · stop · logs\nplayer info · system status"]
+        ext["port 8080\nExtension Server\nyour HTTP endpoints\n(only active when extension runs)"]
+    end
+
+    ws -->|"manage"| api
+    ws -.->|"verify / test"| ext
+    html["HTML App\non player"] -->|"fetch data"| ext
 ```
 
 Requests to `:8008` go to BrightSign firmware. Requests to `:8080` go to your code.

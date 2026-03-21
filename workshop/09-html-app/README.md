@@ -18,40 +18,36 @@ The extension you built in earlier modules exposes an HTTP API on port 8080. The
 
 Updated architecture:
 
-```
-BrightSign Player
-├── Extension process (port 8080)    ← your Java/Go/C++ binary
-│   └── GET /  →  {"message":..., "uptime_seconds":N}
-│
-└── HTML app (BrightScript + JS)     ← this module
-    ├── autorun.brs  — bootstrap, loads HTML widget
-    ├── dist/bundle.js  — webpack bundle of src/index.js
-    └── dist/index.html
-        └── polls http://localhost:8080/ every 1000ms
-            → displays message and uptime on screen
+```mermaid
+graph TB
+    subgraph player["BrightSign Player"]
+        ext["Extension Process\nport 8080\nJava · Go · C++\n\nGET / → {message, uptime_seconds}"]
+        subgraph html["HTML App — this module"]
+            brs["autorun.brs\nBrightScript bootstrap"]
+            bundle["dist/index.html\n+ dist/bundle.js"]
+            brs --> bundle
+        end
+        ext -->|"fetch every 1s"| bundle
+    end
 ```
 
-The HTML app lives in the `workshop/html-app/` directory of this repo as a **git submodule**. It was initialized when you cloned with `--recurse-submodules` in Module 1.
+The HTML app lives in its own repository, separate from the extension repo.
 
 ---
 
-## 9.2 Navigate to the HTML App
+## 9.2 Clone the HTML App
 
 ```
-$ cd /workspace/bs-extension-workshop/workshop/html-app
+$ cd /workspace
+$ git clone https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
+$ cd bs-extension-workshop-html-app
 ```
 
-Verify it is populated:
+Verify contents:
 ```
 $ ls
 ```
 Expected: `src/`, `package.json`, `webpack.config.js`, `Makefile`, `README.md`
-
-> **Note:** If the directory is empty, the submodule was not initialized. Run from the
-> repo root:
-> ```
-> $ git submodule update --init --recursive
-> ```
 
 ---
 

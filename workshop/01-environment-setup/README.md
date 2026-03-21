@@ -103,20 +103,17 @@ Inside the container (or on your workstation if not using the container):
    $ cd /workspace
    ```
 
-2. Clone with submodules:
+2. Clone:
    ```
-   $ git clone --recurse-submodules \
-       https://github.com/BrightSign-Playground/bs-extension-workshop
+   $ git clone https://github.com/BrightSign-Playground/bs-extension-workshop
    $ cd bs-extension-workshop
    ```
-
-   `--recurse-submodules` initializes `workshop/html-app/` (the companion HTML app) automatically.
 
 3. Verify:
    ```
    $ ls workshop/
    ```
-   Expected: numbered module directories plus `html-app/`.
+   Expected: numbered module directories (00 through cleanup).
 
 ---
 

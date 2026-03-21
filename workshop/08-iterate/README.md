@@ -156,17 +156,18 @@ The updated message confirms the new squashfs image is mounted and running.
 
 This is the complete cycle for every change. Write it down. Steps 5–10 are identical regardless of language or framework.
 
-```
-1.  Edit source code
-2.  mvn clean package          (rebuild)
-3.  Update install/ directory  (copy new JAR/binary)
-4.  pkg-dev.sh → new ZIP       (repackage)
-5.  scp ZIP to player
-6.  SSH: bsext_init stop
-7.  SSH: install script uninstall
-8.  SSH: unzip + install new version
-9.  SSH: reboot
-10. curl to verify
+```mermaid
+flowchart TD
+    A["1. Edit source code"] --> B["2. Rebuild\nmvn clean package"]
+    B --> C["3. Update install/\ncopy new JAR or binary"]
+    C --> D["4. Repackage\npkg-dev.sh → new ZIP"]
+    D --> E["5. scp ZIP to player"]
+    E --> F["6. SSH: bsext_init stop"]
+    F --> G["7. SSH: uninstall old version"]
+    G --> H["8. SSH: unzip + install"]
+    H --> I["9. SSH: reboot"]
+    I --> J["10. curl to verify"]
+    J -.->|"make another change"| A
 ```
 
 > **Note:** Steps 2–4 change per language: Go uses `go build`, C++ uses `make`, and so on. Steps 5–10 are the same for every extension. The squashfs packaging and LVM deployment mechanism does not care what runtime is inside the image.

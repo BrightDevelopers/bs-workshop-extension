@@ -42,28 +42,15 @@ The extension model lets you treat the BrightSign player as a general-purpose Li
 
 ## 3. System Architecture
 
-```
-┌─────────────────────────────────────────────────┐
-│                 BrightSign Player                │
-│                                                 │
-│  ┌─────────────────────┐                        │
-│  │  Extension Process  │  ← your code           │
-│  │     port 8080       │                        │
-│  └──────────┬──────────┘                        │
-│             │  HTTP GET /                        │
-│  ┌──────────▼──────────┐                        │
-│  │     HTML App        │  (BrightSign display   │
-│  │  (display layer)    │   layer / BrightScript)│
-│  └─────────────────────┘                        │
-│                                                 │
-│  ┌─────────────────────┐                        │
-│  │  BrightSign Control │  ← install / start /   │
-│  │  API  port 8008     │    stop extensions     │
-│  └─────────────────────┘                        │
-└─────────────────────────────────────────────────┘
-         ▲
-         │  curl / CI pipeline / management tool
-    (your workstation)
+```mermaid
+graph TB
+    subgraph player["BrightSign Player"]
+        ext["Extension Process\nport 8080\nyour code"]
+        html["HTML App\ndisplay layer\nBrightScript + JS"]
+        api["Control API\nport 8008"]
+        ext -->|"HTTP GET /"| html
+    end
+    ws["Your Workstation\ncurl / CI / management tool"] -->|"install · start · stop"| api
 ```
 
 **How the pieces interact:**
@@ -107,26 +94,14 @@ By the end of this workshop you will have deployed a fully functional extension 
 
 ## 6. Architecture of the Finished Product
 
-```
-┌─────────────────────────────────────────────────┐
-│                 BrightSign Player                │
-│                                                 │
-│  ┌─────────────────────────────────┐            │
-│  │  hello-brightsign (extension)   │            │
-│  │                                 │            │
-│  │  GET /  →  { "uptime": "42s" }  │            │
-│  │  port 8080                      │            │
-│  └───────────────┬─────────────────┘            │
-│                  │  fetch every 5s              │
-│  ┌───────────────▼─────────────────┐            │
-│  │  index.html (HTML app)          │            │
-│  │  renders uptime on screen       │            │
-│  └─────────────────────────────────┘            │
-└─────────────────────────────────────────────────┘
-
-Verification from workstation:
-  curl http://<player-ip>:8080/
-  → {"uptime":"42s"}
+```mermaid
+graph TB
+    subgraph player["BrightSign Player"]
+        ext["hello-brightsign\nport 8080\nGET / → {message, uptime_seconds}"]
+        html["index.html\nrenders message and uptime on screen"]
+        ext -->|"fetch every 1s"| html
+    end
+    ws["Your Workstation"] -.->|"curl http://player-ip:8080/"| ext
 ```
 
 ---

@@ -1,6 +1,0 @@
-.env
-.envrc
-*~
-node_modules/
-dist/
-sd/
