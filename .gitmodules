@@ -1,0 +1,3 @@
+[submodule "workshop/html-app"]
+	path = workshop/html-app
+	url = https://github.com/BrightSign-Playground/bs-extension-workshop-html-app

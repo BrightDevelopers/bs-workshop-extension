@@ -1,0 +1,75 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          hello_extension
+# Required-Start:    $network
+# Required-Stop:     $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Hello BrightSign extension
+### END INIT INFO
+
+DAEMON_NAME="hello_extension"
+
+# Adjust JAVA_BIN to the absolute path of the java executable on the player.
+# Verify the correct path with your facilitator before deploying.
+JAVA_BIN="/usr/bin/java"
+
+JAR_PATH="/var/volatile/bsext/${DAEMON_NAME}/hello-extension-1.0.0.jar"
+PID_FILE="/var/run/${DAEMON_NAME}.pid"
+LOG_FILE="/tmp/${DAEMON_NAME}.log"
+
+run_extension() {
+    exec "${JAVA_BIN}" -jar "${JAR_PATH}"
+}
+
+start() {
+    if [ -f "${PID_FILE}" ]; then
+        PID=$(cat "${PID_FILE}")
+        if kill -0 "${PID}" 2>/dev/null; then
+            echo "${DAEMON_NAME} is already running (pid ${PID})"
+            return 0
+        fi
+        rm -f "${PID_FILE}"
+    fi
+
+    run_extension >> "${LOG_FILE}" 2>&1 &
+    echo $! > "${PID_FILE}"
+    echo "started ${DAEMON_NAME} (pid $(cat "${PID_FILE}"))"
+}
+
+stop() {
+    if [ ! -f "${PID_FILE}" ]; then
+        echo "${DAEMON_NAME} is not running"
+        return 0
+    fi
+
+    PID=$(cat "${PID_FILE}")
+    if kill -TERM "${PID}" 2>/dev/null; then
+        echo "stopped ${DAEMON_NAME} (pid ${PID})"
+    else
+        echo "failed to stop ${DAEMON_NAME} (pid ${PID})"
+    fi
+    rm -f "${PID_FILE}"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        sleep 1
+        start
+        ;;
+    run)
+        # Run in the foreground for interactive debugging on the player
+        run_extension
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|run}"
+        exit 1
+        ;;
+esac

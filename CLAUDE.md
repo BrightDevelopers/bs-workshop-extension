@@ -34,6 +34,122 @@ the extension. See "Companion HTML App" section below.
 
 ---
 
+## Prerequisites and Development Environment
+
+### Workshop Participant Prerequisites
+
+| Category | Requirement |
+|---|---|
+| Hardware | BrightSign player (LS424, XD1034, or later with extension support) |
+| Hardware | Development workstation: macOS, Windows, or Linux |
+| Hardware | Ethernet cable + power for the player |
+| Hardware | SD card (for Module 9 HTML app deployment) |
+| Network | Wired network with player and workstation on same subnet |
+| Skills | Comfort with a terminal / command line |
+| Skills | Basic familiarity with the workshop language (Java for the Java variant, etc.) |
+
+Participants do NOT need to install any tools on their workstations if they use the
+development container (see below). The container is the recommended path for
+instructor-led workshops because it eliminates tool version conflicts and OS differences.
+
+### Development Container (Recommended)
+
+A pre-built container image is published to the GitHub Container Registry at:
+```
+ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
+
+The container includes all tools needed for the full workshop:
+- JDK 11 + Maven 3.6
+- Go 1.21 (for future Go module)
+- Node 14.x + npm (for HTML app module)
+- Git, curl, unzip, jq, ssh, scp
+- squashfs-tools (mksquashfs — required for Module 5 packaging)
+- wget, python3 (for JSON pretty-printing in curl exercises)
+
+The Dockerfile for this image lives at `docker/Dockerfile` in this repo.
+
+#### Running the Container on macOS
+
+Prerequisites: Docker Desktop for Mac (or OrbStack).
+
+```
+$ docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+$ docker run -it --rm \
+    -v "$HOME/workshop:/workspace" \
+    -p 8080:8080 \
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
+
+- `-v "$HOME/workshop:/workspace"` mounts a local folder so work persists after the
+  container exits. Replace `$HOME/workshop` with any path you prefer.
+- `-p 8080:8080` forwards port 8080 so the local smoke test (`curl localhost:8080`) works
+  from outside the container.
+- All workshop commands are run inside this container shell.
+
+> **Note for Apple Silicon (M1/M2/M3):** The container is built for `linux/amd64`. Docker
+> Desktop runs it under Rosetta 2 emulation automatically. Add `--platform linux/amd64`
+> explicitly if you see a platform warning.
+
+#### Running the Container on Windows
+
+Prerequisites: Docker Desktop for Windows with WSL2 backend enabled.
+
+Open a PowerShell or Windows Terminal prompt:
+
+```powershell
+docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+docker run -it --rm `
+    -v "${env:USERPROFILE}\workshop:/workspace" `
+    -p 8080:8080 `
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
+
+- Use backtick `` ` `` for line continuation in PowerShell.
+- The workshop directory is created at `%USERPROFILE%\workshop` (e.g.,
+  `C:\Users\YourName\workshop`).
+- scp/ssh to the player work from inside the container — no Windows SSH client needed.
+
+> **Note:** If Docker Desktop is not available, participants can use WSL2 directly with
+> Ubuntu and install tools manually (see Manual Install fallback in the facilitator guide).
+
+#### Cloning the Workshop Repo Inside the Container
+
+Once inside the container:
+
+```
+$ cd /workspace
+$ git clone --recurse-submodules https://github.com/BrightSign-Playground/bs-extension-workshop
+$ cd bs-extension-workshop
+```
+
+`--recurse-submodules` initializes `workshop/html-app/` automatically.
+
+If you cloned without the flag:
+```
+$ git submodule update --init --recursive
+```
+
+### Manual Tool Install (Fallback — No Container)
+
+If the container is unavailable, participants can install tools directly. Minimum set:
+
+| Tool | Version | Install |
+|---|---|---|
+| JDK | 11+ | https://adoptium.net |
+| Maven | 3.6+ | https://maven.apache.org |
+| Node.js | 14.x | https://nodejs.org (select 14.x LTS) |
+| Git | any recent | OS package manager |
+| curl | any | OS package manager |
+| unzip | any | OS package manager |
+| squashfs-tools | any | `sudo apt install squashfs-tools` (Linux only) |
+
+> **Warning:** squashfs-tools is Linux-only. On macOS/Windows without the container,
+> Module 5 packaging must be done inside the container or a Linux VM. This is the primary
+> reason the container is strongly preferred.
+
+---
+
 ## Workshop Philosophy
 
 - **The example program is a teaching prop, not the deliverable.** "Hello BrightSign" is
@@ -70,11 +186,20 @@ the workshop — which is the right problem to have.
 
 ---
 
-## Companion HTML App (Separate Repo)
+## Companion HTML App (Git Submodule)
 
 A standalone BrightSign HTML application that runs on the same player and interacts with
-the extension. It is developed in a sibling repo (name TBD, e.g.
-`bs-workshop-html-app`).
+the extension. It lives as a git submodule in `workshop/html-app/`, pointing to:
+https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
+
+Active development happens in the submodule. After cloning this repo, initialize it:
+```
+git submodule update --init --recursive
+```
+
+Changes to the HTML app are committed and pushed inside `workshop/html-app/` against the
+submodule's own repo. Changes to the submodule pointer (version bump) are committed in
+this repo.
 
 ### Structural model: simple-gaze-detection-html
 
@@ -106,14 +231,14 @@ extension process (port 8080) ↔ BrightSign JS runtime ↔ HTML UI.
 ### HTML app layout
 
 ```
-bs-workshop-html-app/
+workshop/html-app/          ← git submodule
 ├── src/
-│   ├── autorun.brs       # BrightScript bootstrap
-│   ├── index.html        # UI template
-│   └── index.js          # fetch loop, DOM update
+│   ├── autorun.brs         # BrightScript bootstrap
+│   ├── index.html          # UI template
+│   └── index.js            # fetch loop, DOM update
 ├── webpack.config.js
 ├── package.json
-├── Makefile              # prep / build / publish / clean
+├── Makefile                # prep / build / publish / clean
 └── README.md
 ```
 
@@ -227,9 +352,12 @@ Learning objective: Know what changes before shipping.
 ```
 /
 ├── CLAUDE.md                          ← this file
+├── .gitmodules                        ← declares workshop/html-app submodule
 ├── docs/
 │   ├── PRD.md                         ← original PRD (do not delete)
 │   └── DESIGN.md                      ← master design doc (create before building)
+├── docker/
+│   └── Dockerfile                     ← workshop dev container (published to GHCR)
 ├── workshop/
 │   ├── 00-introduction/
 │   │   └── README.md
@@ -239,9 +367,9 @@ Learning objective: Know what changes before shipping.
 │   │   └── README.md
 │   ├── 03-player-api/
 │   │   └── README.md
-│   ├── 04-build-java/                 ← first language variant
+│   ├── 04-build-java/                 ← Java language variant
 │   │   ├── README.md
-│   │   └── hello-extension/           ← Maven project
+│   │   └── hello-extension/           ← Maven project + bsext_init
 │   ├── 04-build-go/                   ← future
 │   ├── 04-build-cpp/                  ← future
 │   ├── 05-package/
@@ -253,7 +381,8 @@ Learning objective: Know what changes before shipping.
 │   ├── 08-iterate/
 │   │   └── README.md
 │   ├── 09-html-app/
-│   │   └── README.md                  ← points to companion HTML repo
+│   │   └── README.md
+│   ├── html-app/                      ← git submodule (bs-extension-workshop-html-app)
 │   ├── 10-production/
 │   │   └── README.md
 │   └── cleanup/
@@ -319,16 +448,20 @@ help         # list targets (default)
 
 ## Current Status
 
-- [ ] Module 0: Introduction
-- [ ] Module 1: Environment Setup
-- [ ] Module 2: Understand Template
-- [ ] Module 3: Player API
-- [ ] Module 4 (Java): Build Extension + Maven project
-- [ ] Module 5: Package
-- [ ] Module 6: Deploy
-- [ ] Module 7: Verify
-- [ ] Module 8: Iterate
-- [ ] Module 9: HTML App + companion repo scaffold
-- [ ] Module 10: Production
-- [ ] Facilitator Guide
-- [ ] Makefile (extension repo)
+- [x] Module 0: Introduction
+- [x] Module 1: Environment Setup
+- [x] Module 2: Understand Template
+- [x] Module 3: Player API
+- [x] Module 4 (Java): Build Extension + Maven project
+- [x] Module 5: Package
+- [x] Module 6: Deploy
+- [x] Module 7: Verify
+- [x] Module 8: Iterate
+- [x] Module 9: HTML App (module README written; html-app submodule registered)
+- [x] Module 10: Production
+- [x] Facilitator Guide
+- [x] Makefile (extension repo)
+- [ ] docker/Dockerfile — dev container for GHCR
+- [ ] Module 1 README update — add container launch instructions (macOS + Windows)
+- [ ] workshop/html-app submodule — active development (separate repo)
+- [ ] Verify Java bsext_init JVM path against actual player model
