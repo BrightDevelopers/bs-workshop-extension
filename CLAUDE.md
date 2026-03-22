@@ -44,7 +44,7 @@ the extension. See "Companion HTML App" section below.
 | Hardware | Development workstation: macOS, Windows, or Linux |
 | Hardware | Ethernet cable + power for the player |
 | Hardware | SD card (for Module 9 HTML app deployment) |
-| Network | Wired network with player and workstation on same subnet |
+| Network | Travel router (GL.iNet or equivalent) bridging venue WiFi to local LAN; players on Ethernet switch; workstations on router WiFi |
 | Skills | Comfort with a terminal / command line |
 | Skills | Basic familiarity with the workshop language (Java for the Java variant, etc.) |
 

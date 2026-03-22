@@ -6,15 +6,35 @@ This guide is for BrightSign engineers running the workshop. Participants do not
 
 ## Pre-Workshop Setup (Day Before)
 
-### Travel Router (Network)
+### Travel Router and Network (Set Up at the Venue)
 
-- [ ] GL.iNet travel router (or equivalent) configured and tested
-- [ ] SSID and password written on a card to hand to each participant
-- [ ] Router DHCP reservations set: one static IP per player MAC address
+The travel router bridges the venue internet to the local workshop LAN. Players connect via Ethernet through a switch; participants connect via the router's WiFi AP.
+
+**Equipment checklist:**
+- [ ] Travel router (GL.iNet [GL-MT3000](https://www.amazon.com/dp/B09N72FMH5) recommended, or equivalent)
+- [ ] Ethernet switch (one port per player + one uplink to router)
+- [ ] Ethernet cables: one per player from switch, one from router LAN port to switch uplink
+
+**Router configuration:**
+- [ ] Set WAN mode to **WiFi Repeater / Extender** — connect to the venue WiFi as the WAN uplink
+- [ ] Confirm the router's LAN subnet does not conflict with the venue network (change if needed, e.g. `192.168.8.0/24`)
+- [ ] Set DHCP reservations: one static IP per player MAC address
+- [ ] Confirm internet access through the router before the session: `curl https://api.github.com`
+
+**Player cabling:**
+- [ ] Each player connected via Ethernet to the switch
+- [ ] Switch uplink connected to the router LAN port
+
+**Verification:**
+- [ ] From a workstation on the router WiFi: ping each player IP
+- [ ] From a workstation: `curl http://<player_ip>/api/v1/info` returns JSON
+- [ ] From a workstation: internet access works (GitHub, Docker Hub reachable)
+
+**Labels and handouts:**
 - [ ] IP address label printed and affixed to each player — participants use this in Module 1.2
-- [ ] Confirm workstation and players can all reach each other on the router subnet
+- [ ] SSID and password written on a card or slide to hand out in Module 1.1
 
-> **If you cannot pre-assign IPs:** participants boot without an SD card and the player displays its IP on screen. Add ~5 minutes to Module 1.
+> **If you cannot pre-assign IPs:** participants boot their player without an SD card and the player shows its IP on screen. Add ~5 minutes to Module 1.2.
 
 ### Players — Insecuring (Critical — Must Be Done Before the Workshop)
 
@@ -35,14 +55,9 @@ Reference: [BrightSign dev environment setup docs](https://github.com/BrightDeve
 ### Facilitator Demo Player
 
 - [ ] Separate pre-insecured player with the finished extension and HTML app already deployed
-- [ ] Used for the Module 0 demo — show it working before participants start
-- [ ] Connected to the travel router; verify extension responds on port 8080 before the session
-
-### Facilitator Demo Player
-
-- [ ] Separate player with the finished extension and HTML app already deployed
-- [ ] Used for the Module 0 demo — show it working before participants start
-- [ ] Keep this player isolated; do not use it for participant exercises
+- [ ] Connected to the travel router switch; verify the extension responds on port 8080 before the session
+- [ ] Used for the Module 0 demo — show `curl` output and the HTML app on screen before participants start
+- [ ] Do not use it for participant exercises
 
 ### Workstations (Container Path — Recommended)
 

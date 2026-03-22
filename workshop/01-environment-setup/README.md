@@ -6,23 +6,42 @@
 - Locate your player's IP address and verify connectivity
 - Confirm the player is configured for extension development
 - Launch the workshop development container
-- Clone the workshop and extension template repositories
+- Clone the workshop materials
+- Create your own extension repository from the template on GitHub
 
-**Prerequisites:** Module 0 complete. Docker Desktop installed (macOS/Windows) or Docker Engine (Linux).
+**Prerequisites:** Module 0 complete. Docker Desktop installed (macOS/Windows) or Docker Engine (Linux). GitHub account (personal or work) — needed in section 1.6.
 
 ---
 
 ## 1.1 Workshop Network Setup
 
-<!-- instructor: The travel router is the workshop LAN. Players are already plugged into it. Hand out the SSID and password verbally or on a card. If players have pre-assigned IPs, distribute the IP list before this section. -->
+<!-- instructor: Hand out the SSID and password before this section. Players are already plugged into the switch. Confirm the travel router has a WAN uplink to facility WiFi before participants arrive — if the router cannot reach the venue WiFi, participants won't be able to clone repos from inside the container. -->
 
-The Workshop Leader (WL) provides a travel router (GL.iNet or equivalent) that creates an isolated local network for all players and workstations. **Do not use venue WiFi for player communication** — it is slower and may block the ports used by the player.
+The WL provides a travel router that bridges the venue internet connection to a local workshop network. The network topology is:
+
+```mermaid
+graph TD
+    inet["Facility WiFi / Internet"]
+    inet -->|WAN uplink via WiFi| router["Travel Router\nGL.iNet or equivalent"]
+    router -->|LAN port| switch["Ethernet Switch"]
+    switch --> p1["BrightSign Player 1"]
+    switch --> p2["BrightSign Player 2"]
+    switch --> pn["BrightSign Player N..."]
+    router -->|WiFi| wp1["Your Workstation"]
+    router -->|WiFi| wp2["Other Workstations"]
+```
+
+Your workstation connects to the travel router over **WiFi**. This gives you:
+- Access to the internet (for `git clone`, `docker pull`, etc.)
+- Direct access to the BrightSign players on the wired LAN
+
+The players connect to the travel router via Ethernet through a switch — not WiFi. This ensures stable, low-latency connections to the players during deployment.
 
 1. On your workstation, connect to the workshop WiFi:
    - **SSID:** provided by your WL
    - **Password:** provided by your WL
 
-2. Confirm your workstation has an IP on the workshop subnet:
+2. Confirm your workstation received an IP on the workshop subnet:
 
    macOS / Linux:
    ```
@@ -32,7 +51,13 @@ The Workshop Leader (WL) provides a travel router (GL.iNet or equivalent) that c
    ```
    > ipconfig
    ```
-   Expected: an address in the same subnet as the players (e.g. `192.168.8.x`).
+   Expected: an address in the travel router's subnet (e.g. `192.168.8.x`).
+
+3. Confirm you have internet access:
+   ```
+   $ curl -s https://api.github.com | python3 -m json.tool | head -5
+   ```
+   Expected: JSON from GitHub API. If this fails, ask your WL — the router's WAN uplink may need attention.
 
 ---
 
@@ -258,24 +283,61 @@ Inside the container:
 
 ---
 
-## 1.6 Clone the Extension Template
+## 1.6 Create Your Extension Repo from the Template
 
-1. From the workspace directory, clone the template alongside the workshop repo:
+<!-- instructor: WPs need a GitHub account for this step. Confirm everyone has one before starting. Walk through the "Use this template" flow on the projector. -->
+
+Rather than cloning the extension template directly, you will create your own repository from it. This gives you a repo you own, can push to, and take home after the workshop.
+
+> **Prerequisite:** You need a GitHub account (personal or work). If you do not have one, create a free account at https://github.com now.
+
+### On GitHub (in your browser)
+
+1. Navigate to the extension template:
+   ```
+   https://github.com/brightsign/extension-template
+   ```
+
+2. Click the **"Use this template"** button (green, near the top right).
+
+3. Select **"Create a new repository"**.
+
+4. Fill in the form:
+   - **Owner:** your GitHub username or organization
+   - **Repository name:** choose a name for your extension project (e.g. `my-brightsign-extension`, `acme-player-ext`, or whatever fits your use case)
+   - **Visibility:** Public or Private — your choice
+   - Leave "Include all branches" unchecked
+
+5. Click **"Create repository"**.
+
+   GitHub creates a new repo in your account with the full template structure already in place.
+
+### Back in the container
+
+6. Clone your new repo:
    ```
    $ cd /workspace
-   $ git clone https://github.com/brightsign/extension-template
+   $ git clone https://github.com/<your-username>/<your-repo-name>
+   $ cd <your-repo-name>
    ```
 
-2. Verify contents:
+7. Verify contents:
    ```
-   $ find extension-template -type f | sort
+   $ find . -type f | sort
    ```
    Expected: files under `examples/`, `common-scripts/`, `docs/`.
 
-   > **Note:** You are cloning this template to study its structure. In Module 4 you will
-   > build your own extension. Do not modify these template files.
+8. Set your Git identity inside the container (required to commit):
+   ```
+   $ git config user.email "you@example.com"
+   $ git config user.name "Your Name"
+   ```
+
+> **Note:** This is your extension repo. You will build your Hello BrightSign extension
+> here in Module 4 and push your changes back to GitHub at the end of the workshop.
+> The template files in `examples/` are reference material — Module 2 walks through them.
 
 ---
 
-You now have a connected, insecured player, a running container, and both repos cloned.
+You now have a connected insecured player, a running container, the workshop materials cloned, and your own extension repo ready.
 Proceed to **[Module 2](../02-understand-template/README.md)**.
