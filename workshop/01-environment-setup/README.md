@@ -2,23 +2,170 @@
 
 **Duration:** 30 minutes
 **Learning Objectives:**
-- Launch the workshop development container (or verify manual tool installs)
-- Connect to your BrightSign player and confirm network access
-- Enable developer mode on the player
-- Clone the extension template repository
+- Connect your workstation to the workshop network
+- Locate your player's IP address and verify connectivity
+- Confirm the player is configured for extension development
+- Launch the workshop development container
+- Clone the workshop and extension template repositories
 
 **Prerequisites:** Module 0 complete. Docker Desktop installed (macOS/Windows) or Docker Engine (Linux).
 
 ---
 
-## 1.1 Start the Development Container
+## 1.1 Workshop Network Setup
+
+<!-- instructor: The travel router is the workshop LAN. Players are already plugged into it. Hand out the SSID and password verbally or on a card. If players have pre-assigned IPs, distribute the IP list before this section. -->
+
+The Workshop Leader (WL) provides a travel router (GL.iNet or equivalent) that creates an isolated local network for all players and workstations. **Do not use venue WiFi for player communication** — it is slower and may block the ports used by the player.
+
+1. On your workstation, connect to the workshop WiFi:
+   - **SSID:** provided by your WL
+   - **Password:** provided by your WL
+
+2. Confirm your workstation has an IP on the workshop subnet:
+
+   macOS / Linux:
+   ```
+   $ ip addr show   # or: ifconfig
+   ```
+   Windows:
+   ```
+   > ipconfig
+   ```
+   Expected: an address in the same subnet as the players (e.g. `192.168.8.x`).
+
+---
+
+## 1.2 Find Your Player's IP Address
+
+Each player at your bench has a label showing its IP address. This IP is a static DHCP reservation set up by the WL — it will not change during the workshop.
+
+> **If there is no label on your player**, boot it without an SD card inserted. The player displays its IP address on the connected display during boot.
+
+1. Note the IP address from the label (or from the display).
+
+2. Set an environment variable — this is used in every module from here on:
+   ```
+   $ export PLAYER_IP=<your_player_ip>
+   ```
+
+   > **Tip:** Save this in a file so it survives a container restart:
+   > ```
+   > $ echo "export PLAYER_IP=$PLAYER_IP" >> /workspace/.envrc
+   > ```
+
+3. Verify the player is reachable:
+   ```
+   $ ping -c 3 $PLAYER_IP
+   ```
+   Expected:
+   ```
+   3 packets transmitted, 3 received, 0% packet loss
+   ```
+
+4. Verify the BrightSign API responds:
+   ```
+   $ curl -s http://$PLAYER_IP/api/v1/info | python3 -m json.tool
+   ```
+   Expected: JSON with player model, firmware version, serial number.
+
+   > **Note:** The DWS runs on port 80 (not 8008). The WL has already configured the
+   > player to run the DWS with no authentication required.
+
+---
+
+## 1.3 Understand the Player's Development Configuration
+
+<!-- instructor: Players have already been insecured and had the development autorun.brs applied. Walk participants through what was done and why. Emphasize that insecuring is irreversible — these are dedicated development units. -->
+
+The WL has already prepared each player for extension development. This section explains what was done so you understand the state of the hardware you are working with.
+
+### What "Insecuring" Means
+
+BrightSign players ship with secure boot enabled. Secure boot prevents unsigned code — including native OS extensions — from running. To develop and deploy unsigned extensions, secure boot must be permanently disabled. This is a one-way, irreversible operation called "insecuring" the player.
+
+> **Warning:** Insecuring a player cannot be undone by factory reset, OS update, or any other means. The players provided for this workshop are dedicated development units. Never insecure a production player.
+
+The insecuring process required:
+1. Connecting a serial cable (115200 baud, 8N1) and interrupting the bootloader at startup using the SVC button + Ctrl-C.
+2. Running `disable_secure_boot` at the bootloader prompt (or `setenv SECURE_CHECKS 0` + `saveenv` as a fallback).
+3. Enabling the BrightScript debugger via `script debug on` at the BrightSign shell.
+
+### What the Development autorun.brs Does
+
+After insecuring, the WL booted each player with this `autorun.brs` on an SD card:
+
+```brightscript
+Sub Main()
+    regB = CreateObject("roRegistrySection", "brightscript")
+    regB.Write("debug", "1")
+    regB.Flush()
+
+    reg = CreateObject("roRegistrySection", "networking")
+    reg.Write("bbhf", "on")
+    reg.Write("dwse", "yes")
+    reg.Write("curl_debug", "1")
+    reg.Write("prometheus-node-exporter-port", "9100")
+    reg.Write("ssh", "22")
+    reg.Write("telnet_log_level", "7")
+    reg.Flush()
+
+    CreateObject("roNetworkConfiguration", 0).SetupDWS({port: "80", open: "none"})
+
+    n = CreateObject("roNetworkConfiguration", 0)
+    n.SetLoginPassword("none")
+    n.Apply()
+
+    ShowMessage("Setup complete -- manually reboot the player to apply settings")
+    sleep(50000)
+End Sub
+```
+
+This one-time setup wrote the following registry keys and then the player was rebooted **without the SD card**. After that reboot, the player has:
+
+| Feature | Value |
+|---|---|
+| Local DWS | `http://<player_ip>/` — no login required |
+| SSH | port 22 — no password required |
+| BrightScript debug | enabled |
+| curl verbose logging | enabled |
+
+> **Warning:** This configuration has no authentication. It is only safe on the isolated workshop travel router network. Do not expose these players to a corporate or public network.
+
+### Verify the Player is Ready
+
+1. Open a browser on your workstation and navigate to:
+   ```
+   http://<your_player_ip>/
+   ```
+   Expected: the BrightSign Diagnostic Web Server (DWS) home page loads with no login prompt.
+
+2. Verify SSH from inside the container:
+   ```
+   $ ssh brightsign@$PLAYER_IP
+   ```
+   Expected: shell prompt with no password required. Type `exit` to leave.
+
+   > **Note:** `exit` at the BrightSign shell (`BrightSign>`) reboots the player on a secure device. On these insecured players, `exit` drops to a Linux root shell (`#`). Type `exit` again to reboot.
+
+3. Verify the DWS API:
+   ```
+   $ curl -s http://$PLAYER_IP/api/v1/info | python3 -m json.tool
+   ```
+   Expected: JSON response with `model`, `firmwareVersion`, `serialNumber`.
+
+If any of these fail, ask your WL before proceeding.
+
+---
+
+## 1.4 Start the Development Container
 
 The workshop uses a pre-built container that includes all required tools: JDK 11, Maven,
 Node 14, Go, Git, curl, squashfs-tools, and more. This eliminates tool installation and
 version conflicts across macOS, Windows, and Linux.
 
-> **Note:** If your facilitator has confirmed that tools are pre-installed on your
-> workstation, skip to section 1.2.
+> **Note:** If your WL has confirmed that tools are pre-installed on your
+> workstation, skip to section 1.5.
 
 ### macOS
 
@@ -41,10 +188,9 @@ version conflicts across macOS, Windows, and Linux.
    workshop are run here unless stated otherwise.
 
    > **Note for Apple Silicon (M1/M2/M3):** If you see a platform warning, add
-   > `--platform linux/amd64` to the `docker run` command. The container runs under
-   > Rosetta 2 emulation automatically.
+   > `--platform linux/amd64` to the `docker run` command.
 
-4. Verify tools inside the container:
+4. Verify tools:
    ```
    $ java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
    ```
@@ -67,22 +213,17 @@ version conflicts across macOS, Windows, and Linux.
        ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
    ```
 
-   You are now at a shell prompt inside the container. All workshop commands run here.
-
 4. Verify tools:
    ```
    $ java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
    ```
    Expected: version lines for each tool, no errors.
 
-> **Warning:** Do not use `cmd.exe`. Use PowerShell or Windows Terminal. The volume
-> mount syntax above does not work in `cmd.exe`.
+   > **Warning:** Use PowerShell or Windows Terminal — not `cmd.exe`. The volume mount syntax does not work in `cmd.exe`.
 
 ### Linux
 
-1. Open a terminal.
-
-2. Pull and start:
+1. Open a terminal and start the container:
    ```
    $ docker run -it --rm \
        -v "$HOME/workshop:/workspace" \
@@ -90,15 +231,15 @@ version conflicts across macOS, Windows, and Linux.
        ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
    ```
 
-3. Verify tools as above.
+2. Verify tools as above.
 
 ---
 
-## 1.2 Clone the Workshop Repo
+## 1.5 Clone the Workshop Repo
 
-Inside the container (or on your workstation if not using the container):
+Inside the container:
 
-1. Navigate to the workspace directory:
+1. Navigate to workspace:
    ```
    $ cd /workspace
    ```
@@ -117,99 +258,24 @@ Inside the container (or on your workstation if not using the container):
 
 ---
 
-## 1.3 Player Setup
+## 1.6 Clone the Extension Template
 
-Each participant has a BrightSign player at their bench.
-
-1. Connect the power cable to the player.
-
-2. Connect an Ethernet cable from the player to the workshop network switch.
-
-3. Wait for the player to complete its boot sequence. The LED on the front panel turns solid (non-blinking) when ready.
-
-4. Find your player's IP address:
-   - **Display method:** If no content is loaded, the player shows its IP on screen during boot.
-   - **DHCP table method:** Check your router or network switch DHCP lease table for the player's MAC address.
-   - **Facilitator list:** Use the IP assigned to your bench in the workshop network map.
-
-5. Set an environment variable (used in every module from here on):
-   ```
-   $ export PLAYER_IP=<your_player_ip>
-   ```
-
-   > **Tip:** Add this to your container session's history so you can re-run it if you
-   > restart the container. If using a persistent `/workspace` volume, save it in a
-   > `.envrc` file: `echo "export PLAYER_IP=<ip>" >> /workspace/.envrc`
-
-6. Verify network connectivity from inside the container:
-   ```
-   $ ping -c 3 $PLAYER_IP
-   ```
-   Expected:
-   ```
-   3 packets transmitted, 3 received, 0% packet loss
-   ```
-
-7. Verify the BrightSign API is reachable:
-   ```
-   $ curl -s http://$PLAYER_IP:8008/api/v1/info | python3 -m json.tool
-   ```
-   Expected: JSON with player model, firmware version, serial number.
-
----
-
-## 1.4 Enable Developer Mode on the Player
-
-> **Warning:** Developer mode disables signature verification. Never apply these settings
-> to a player in a public or production installation.
-
-1. Open a browser on your workstation (not inside the container) and navigate to:
-   ```
-   http://<your_player_ip>
-   ```
-
-2. Log in to the player web interface. Default credentials are on the player's display or
-   in the facilitator guide.
-
-3. Navigate to **Settings** → **Developer Options**.
-
-4. Enable **Local Extensions**.
-
-5. Enable **Insecure Content Loading**.
-
-6. Click **Save** (or **Apply**).
-
-7. The player may reboot. Wait for the LED to return to solid, then re-verify:
-   ```
-   $ curl -s http://$PLAYER_IP:8008/api/v1/info | python3 -m json.tool
-   ```
-   Expected: same JSON response as step 1.3.7.
-
----
-
-## 1.5 Clone the Extension Template
-
-1. Inside the container, navigate to workspace:
+1. From the workspace directory, clone the template alongside the workshop repo:
    ```
    $ cd /workspace
-   ```
-
-2. Clone the template (separate from the workshop repo):
-   ```
    $ git clone https://github.com/brightsign/extension-template
-   $ cd extension-template
    ```
 
-3. Verify contents:
+2. Verify contents:
    ```
-   $ find . -type f | sort
+   $ find extension-template -type f | sort
    ```
-   Expected: tree of files including `examples/`, `common-scripts/`, `docs/`.
+   Expected: files under `examples/`, `common-scripts/`, `docs/`.
 
-> **Note:** You are cloning this template to study its structure. In Module 4 you will
-> build your own extension. Do not modify these template files.
+   > **Note:** You are cloning this template to study its structure. In Module 4 you will
+   > build your own extension. Do not modify these template files.
 
 ---
 
-You now have a running container, a connected player in developer mode, and the template
-cloned. Proceed to **Module 2**.
+You now have a connected, insecured player, a running container, and both repos cloned.
+Proceed to **[Module 2](../02-understand-template/README.md)**.

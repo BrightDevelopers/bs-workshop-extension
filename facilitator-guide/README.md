@@ -6,13 +6,37 @@ This guide is for BrightSign engineers running the workshop. Participants do not
 
 ## Pre-Workshop Setup (Day Before)
 
-### Players
+### Travel Router (Network)
 
-- [ ] One player per participant (or per pair for larger groups)
-- [ ] All players on the same network as participant workstations
-- [ ] Dev mode pre-enabled on all players (saves ~5 minutes per participant in Module 1)
-- [ ] IP address list printed or displayed on a shared screen (one row per player)
-- [ ] SSH enabled (optional but useful for Module 7 log inspection)
+- [ ] GL.iNet travel router (or equivalent) configured and tested
+- [ ] SSID and password written on a card to hand to each participant
+- [ ] Router DHCP reservations set: one static IP per player MAC address
+- [ ] IP address label printed and affixed to each player — participants use this in Module 1.2
+- [ ] Confirm workstation and players can all reach each other on the router subnet
+
+> **If you cannot pre-assign IPs:** participants boot without an SD card and the player displays its IP on screen. Add ~5 minutes to Module 1.
+
+### Players — Insecuring (Critical — Must Be Done Before the Workshop)
+
+Insecuring a player is **irreversible**. Do this only on dedicated development units.
+
+For each participant player:
+- [ ] Connect serial cable (115200 baud, 8N1)
+- [ ] Remove SD card, hold SVC button, apply power, press Ctrl-C at bootloader countdown
+- [ ] At bootloader prompt: `disable_secure_boot` (or `setenv SECURE_CHECKS 0` + `saveenv` as fallback)
+- [ ] Reboot, then at BrightSign shell: `script debug on` + `reboot`
+- [ ] Boot with the development `autorun.brs` on SD card (see Module 1.3 in the workshop for the script)
+- [ ] After player displays "Setup complete", remove SD card and reboot
+- [ ] Verify: SSH in, type `exit` twice — second `exit` should drop to `#` Linux shell (not reboot)
+- [ ] Affix IP label to player
+
+Reference: [BrightSign dev environment setup docs](https://github.com/BrightDevelopers/technical-documentation/blob/main/howto-articles/01-setting-up-development-environment.md)
+
+### Facilitator Demo Player
+
+- [ ] Separate pre-insecured player with the finished extension and HTML app already deployed
+- [ ] Used for the Module 0 demo — show it working before participants start
+- [ ] Connected to the travel router; verify extension responds on port 8080 before the session
 
 ### Facilitator Demo Player
 
@@ -45,7 +69,7 @@ If Docker is unavailable, ensure these are installed on the workstation:
 | Module | Expected | Watch for |
 |---|---|---|
 | 0 — Introduction | 15 min | Demo can run long; cut Q&A if needed |
-| 1 — Environment Setup | 30 min | Windows JDK issues eat time; have a pre-configured VM ready |
+| 1 — Environment Setup | 30 min | Travel router connectivity is the most common blocker; verify all players are reachable before starting |
 | 2 — Understand Template | 20 min | Often sparks questions; 5-minute buffer built in |
 | 3 — Player API | 15 min | Network issues here signal problems ahead; fix before proceeding |
 | Break | 10 min | After Module 3 |
