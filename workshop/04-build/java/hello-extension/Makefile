@@ -5,7 +5,7 @@ JAR_NAME       := hello-extension-1.0.0.jar
 JAR_PATH       := target/$(JAR_NAME)
 INSTALL_DIR    := install
 JRE_DIR        := $(INSTALL_DIR)/jre
-COMMON_SCRIPTS := ../../common-scripts
+COMMON_SCRIPTS := ../common-scripts
 
 # Eclipse Temurin 11 JRE for BrightSign (ARM64 Linux).
 # This JRE is bundled inside the squashfs image — the player has no system Java.

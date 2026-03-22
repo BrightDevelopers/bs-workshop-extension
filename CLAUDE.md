@@ -271,21 +271,21 @@ Learning objective: Control extensions via the BrightSign REST API.
 ### Module 4 — Build the Extension Binary [MODULAR — SWAP PER LANGUAGE] (45 min)
 Learning objective: Produce a binary that satisfies the extension contract.
 
-Each language variant lives in `workshop/04-build-<language>/`. Swap this module for
-the customer's language. The output contract is always the same: one binary (or JAR)
-plus any supporting files, which Module 5 packages.
+All language variants live in `workshop/04-build/` with per-language subdirectories.
+Swap this module for the customer's language. The output contract is always the same:
+one binary (or JAR) plus any supporting files, which Module 5 packages.
 
-#### 04-build-java/
+#### 04-build/java/
 - Create Maven project. Implement `HelloExtension.java`: embedded HTTP server
   (`com.sun.net.httpserver`), uptime counter, startup log write.
 - `mvn clean package` → fat JAR with all dependencies.
 - Local smoke test: `java -jar target/hello-extension.jar` → `curl localhost:8080`.
 
-#### 04-build-go/ (future)
+#### 04-build/go/ (future)
 - `go mod init`, `net/http`, cross-compile for BrightSign ARM target.
 - Same local smoke test.
 
-#### 04-build-cpp/ (future)
+#### 04-build/cpp/ (future)
 - CMake + cpp-httplib, cross-compile toolchain.
 - Same local smoke test.
 
@@ -355,11 +355,10 @@ Learning objective: Know what changes before shipping.
 │   │   └── README.md
 │   ├── 03-player-api/
 │   │   └── README.md
-│   ├── 04-build-java/                 ← Java language variant
-│   │   ├── README.md
-│   │   └── hello-extension/           ← Maven project + bsext_init
-│   ├── 04-build-go/                   ← future
-│   ├── 04-build-cpp/                  ← future
+│   ├── 04-build/                      ← language-specific module
+│   │   ├── README.md                  ← Java (full), Go + C++ (stubs)
+│   │   └── java/
+│   │       └── hello-extension/       ← Maven project + bsext_init
 │   ├── 05-package/
 │   │   └── README.md
 │   ├── 06-deploy/

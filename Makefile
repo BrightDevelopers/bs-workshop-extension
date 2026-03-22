@@ -1,4 +1,4 @@
-EXTENSION_DIR   := workshop/04-build-java/hello-extension
+EXTENSION_DIR   := workshop/04-build/java/hello-extension
 INSTALL_DIR     := $(EXTENSION_DIR)/install
 COMMON_SCRIPTS  := ../extension-template/examples/common-scripts
 JAR_NAME        := hello-extension-1.0.0.jar
