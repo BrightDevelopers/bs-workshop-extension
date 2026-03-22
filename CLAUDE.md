@@ -448,7 +448,7 @@ help         # list targets (default)
 - [x] Facilitator Guide
 - [x] Makefile (extension repo)
 - [x] docker/Dockerfile — dev container for GHCR
-- [x] .github/workflows/docker-publish.yml — builds and pushes on merge to main and version tags
+- [ ] .github/workflows/docker-publish.yml — not yet created
 - [ ] Module 1 README update — add container launch instructions (macOS + Windows)
 - [x] HTML app — lives at https://github.com/BrightSign-Playground/bs-extension-workshop-html-app (separate repo, no submodule)
 - [x] Java bsext_init — bundles Eclipse Temurin 11 JRE for linux/aarch64; no system Java required on player
