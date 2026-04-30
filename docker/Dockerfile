@@ -13,15 +13,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     lvm2 \
     maven \
     openssh-client \
-    openjdk-11-jdk \
+    openjdk-17-jdk \
     python3 \
     squashfs-tools \
     unzip \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 14.x (required for HTML app module — matches BrightSign player runtime)
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
+# Node.js 20.x (LTS — used for webpack build toolchain only, not deployed to player)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 

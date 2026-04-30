@@ -131,7 +131,7 @@ If the container is unavailable, participants can install tools directly. Minimu
 |---|---|---|
 | JDK | 11+ | https://adoptium.net |
 | Maven | 3.6+ | https://maven.apache.org |
-| Node.js | 14.x | https://nodejs.org (select 14.x LTS) |
+| Node.js | 20.x | https://nodejs.org (select 20.x LTS) |
 | Git | any recent | OS package manager |
 | curl | any | OS package manager |
 | unzip | any | OS package manager |
