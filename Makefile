@@ -4,8 +4,8 @@ COMMON_SCRIPTS  := ../extension-template/examples/common-scripts
 JAR_NAME        := hello-extension-1.0.0.jar
 EXTENSION_NAME  := hello_extension
 
-IMAGE           := ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-GHCR_ORG        := brightsign-playground
+IMAGE           := ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+GHCR_ORG        := brightdevelopers
 GHCR_PKG        := bs-extension-workshop-devenv
 
 CONTAINER_TOOL  := $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)

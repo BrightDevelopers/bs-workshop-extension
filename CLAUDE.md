@@ -56,7 +56,7 @@ instructor-led workshops because it eliminates tool version conflicts and OS dif
 
 A pre-built container image is published to the GitHub Container Registry at:
 ```
-ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 The container includes all tools needed for the full workshop:
@@ -74,11 +74,11 @@ The Dockerfile for this image lives at `docker/Dockerfile` in this repo.
 Prerequisites: Docker Desktop for Mac (or OrbStack).
 
 ```
-$ docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+$ docker pull ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 $ docker run -it --rm \
     -v "$HOME/workshop:/workspace" \
     -p 8080:8080 \
-    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 - `-v "$HOME/workshop:/workspace"` mounts a local folder so work persists after the
@@ -98,11 +98,11 @@ Prerequisites: Docker Desktop for Windows with WSL2 backend enabled.
 Open a PowerShell or Windows Terminal prompt:
 
 ```powershell
-docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+docker pull ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 docker run -it --rm `
     -v "${env:USERPROFILE}\workshop:/workspace" `
     -p 8080:8080 `
-    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 - Use backtick `` ` `` for line continuation in PowerShell.
@@ -119,8 +119,8 @@ Once inside the container:
 
 ```
 $ cd /workspace
-$ git clone https://github.com/BrightSign-Playground/bs-extension-workshop
-$ cd bs-extension-workshop
+$ git clone https://github.com/BrightDevelopers/bs-workshop-extension
+$ cd bs-workshop-extension
 ```
 
 ### Manual Tool Install (Fallback — No Container)
@@ -184,7 +184,7 @@ the workshop — which is the right problem to have.
 A standalone BrightSign HTML application that runs on the same player and interacts with
 the extension. It lives in its own repository:
 
-**https://github.com/BrightSign-Playground/bs-extension-workshop-html-app**
+**https://github.com/BrightDevelopers/bs-extension-workshop-html-app**
 
 This repo contains no reference to it beyond this CLAUDE.md and the Module 9 README.
 Participants clone it independently during Module 9.
@@ -315,7 +315,7 @@ Learning objective: Execute the full change → rebuild → redeploy cycle.
 
 ### Module 9 — The HTML App (30 min)
 Learning objective: Build and deploy the HTML app that consumes the extension.
-- Clone https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
+- Clone https://github.com/BrightDevelopers/bs-extension-workshop-html-app
 - `make prep && make build && make publish`.
 - Walk `src/autorun.brs`, `src/index.html`, `src/index.js` — same pattern as
   simple-gaze-detection-html.
@@ -450,5 +450,5 @@ help         # list targets (default)
 - [x] docker/Dockerfile — dev container for GHCR
 - [ ] .github/workflows/docker-publish.yml — not yet created
 - [ ] Module 1 README update — add container launch instructions (macOS + Windows)
-- [x] HTML app — lives at https://github.com/BrightSign-Playground/bs-extension-workshop-html-app (separate repo, no submodule)
+- [x] HTML app — lives at https://github.com/BrightDevelopers/bs-extension-workshop-html-app (separate repo, no submodule)
 - [x] Java bsext_init — bundles Eclipse Temurin 11 JRE for linux/aarch64; no system Java required on player

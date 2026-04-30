@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim
 
-LABEL org.opencontainers.image.source=https://github.com/BrightSign-Playground/bs-extension-workshop
+LABEL org.opencontainers.image.source=https://github.com/BrightDevelopers/bs-workshop-extension
 LABEL org.opencontainers.image.description="BrightSign Extension Workshop — development environment"
 LABEL org.opencontainers.image.licenses=Apache-2.0
 
