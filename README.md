@@ -76,7 +76,7 @@ of whether the extension is written in Java, Go, C++, or anything else.
 | Requirement | Notes |
 |---|---|
 | GitHub account | Personal or work account — you will create your own extension repo from the template and push your work there. Sign up free at https://github.com if you don't have one. |
-| Docker Desktop | macOS/Windows. Or Docker Engine on Linux. Every build tool (JDK, Maven, Node, Go, squashfs-tools) is pre-installed in the workshop container — no other software installation required. |
+| Docker or Podman | Docker Desktop (macOS/Windows), Docker Engine, or Podman. Every build tool (JDK, Maven, Node, Go, squashfs-tools) is pre-installed in the workshop container — no other software installation required. |
 
 **Provided by the WL — WPs bring nothing else**
 
@@ -91,12 +91,22 @@ of whether the extension is written in Java, Go, C++, or anything else.
 
 ## Quick Start
 
-**1. Pull the dev container**
+> Commands below use `docker`. Substitute `podman` if that's what you have — the syntax
+> is identical.
+
+**1. Clone this repo and enter it**
+
+```bash
+git clone https://github.com/BrightSign-Playground/bs-extension-workshop
+cd bs-extension-workshop
+```
+
+**2. Start the dev container** (run from inside the cloned directory)
 
 macOS / Linux:
 ```bash
 docker run -it --rm \
-    -v "$HOME/workshop:/workspace" \
+    -v "$(pwd):/workspace" \
     -p 8080:8080 \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
@@ -104,17 +114,13 @@ docker run -it --rm \
 Windows (PowerShell):
 ```powershell
 docker run -it --rm `
-    -v "${env:USERPROFILE}\workshop:/workspace" `
+    -v "${PWD}:/workspace" `
     -p 8080:8080 `
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
-**2. Clone this repo inside the container**
-```bash
-cd /workspace
-git clone https://github.com/BrightSign-Playground/bs-extension-workshop
-cd bs-extension-workshop
-```
+You are now at `/workspace` inside the container — which is the cloned repo. Work
+persists on your host after the container exits.
 
 **3. Start at Module 0**
 

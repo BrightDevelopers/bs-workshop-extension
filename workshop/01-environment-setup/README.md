@@ -9,7 +9,7 @@
 - Clone the workshop materials
 - Create your own extension repository from the template on GitHub
 
-**Prerequisites:** Module 0 complete. Docker Desktop installed (macOS/Windows) or Docker Engine (Linux). GitHub account (personal or work) — needed in section 1.6.
+**Prerequisites:** Module 0 complete. Docker Desktop (macOS/Windows), Docker Engine, or Podman installed. GitHub account (personal or work) — needed in section 1.6.
 
 ---
 
@@ -186,100 +186,79 @@ If any of these fail, ask your WL before proceeding.
 ## 1.4 Start the Development Container
 
 The workshop uses a pre-built container that includes all required tools: JDK 11, Maven,
-Node 14, Go, Git, curl, squashfs-tools, and more. This eliminates tool installation and
+Node.js 20, Go, Git, curl, squashfs-tools, and more. This eliminates tool installation and
 version conflicts across macOS, Windows, and Linux.
 
-> **Note:** If your WL has confirmed that tools are pre-installed on your
-> workstation, skip to section 1.5.
+> **Note:** The commands below use `docker`. If you have `podman` instead, substitute it
+> everywhere — the syntax is identical.
 
-### macOS
+> **Note:** If your WL has confirmed that tools are pre-installed on your workstation,
+> skip to section 1.5.
 
-1. Open Terminal.
+### Step 1: Clone the workshop repo on your host
 
-2. Pull the container image:
-   ```
-   $ docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-   ```
+Before starting the container, clone the workshop repo and enter it. The container mounts
+this directory as `/workspace`, so your work persists after the container exits.
 
-3. Start the container:
-   ```
-   $ docker run -it --rm \
-       -v "$HOME/workshop:/workspace" \
-       -p 8080:8080 \
-       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-   ```
+**macOS / Linux — open Terminal:**
+```
+$ git clone https://github.com/BrightSign-Playground/bs-extension-workshop
+$ cd bs-extension-workshop
+```
 
-   You are now at a shell prompt inside the container. All subsequent commands in this
-   workshop are run here unless stated otherwise.
+**Windows — open PowerShell or Windows Terminal:**
+```powershell
+git clone https://github.com/BrightSign-Playground/bs-extension-workshop
+cd bs-extension-workshop
+```
 
-   > **Note for Apple Silicon (M1/M2/M3):** If you see a platform warning, add
-   > `--platform linux/amd64` to the `docker run` command.
+### Step 2: Start the container
 
-4. Verify tools:
-   ```
-   $ java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
-   ```
-   Expected: version lines for each tool, no errors.
+Run the following from **inside the `bs-extension-workshop` directory**. This mounts your
+current directory as `/workspace` inside the container.
 
-### Windows
+**macOS / Linux:**
+```
+$ docker run -it --rm \
+    -v "$(pwd):/workspace" \
+    -p 8080:8080 \
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
 
-1. Open PowerShell or Windows Terminal.
+**Windows (PowerShell):**
+```powershell
+docker run -it --rm `
+    -v "${PWD}:/workspace" `
+    -p 8080:8080 `
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
 
-2. Pull the container image:
-   ```powershell
-   docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-   ```
+You are now at a shell prompt inside the container at `/workspace` — which is your cloned
+workshop repo. All subsequent commands in this workshop are run here unless stated otherwise.
 
-3. Start the container:
-   ```powershell
-   docker run -it --rm `
-       -v "${env:USERPROFILE}\workshop:/workspace" `
-       -p 8080:8080 `
-       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-   ```
+> **Note for Apple Silicon (M1/M2/M3):** If you see a platform warning, add
+> `--platform linux/amd64` to the run command.
 
-4. Verify tools:
-   ```
-   $ java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
-   ```
-   Expected: version lines for each tool, no errors.
+> **Warning (Windows):** Use PowerShell or Windows Terminal — not `cmd.exe`. The
+> `${PWD}` expansion does not work in `cmd.exe`.
 
-   > **Warning:** Use PowerShell or Windows Terminal — not `cmd.exe`. The volume mount syntax does not work in `cmd.exe`.
+### Step 3: Verify tools
 
-### Linux
-
-1. Open a terminal and start the container:
-   ```
-   $ docker run -it --rm \
-       -v "$HOME/workshop:/workspace" \
-       -p 8080:8080 \
-       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-   ```
-
-2. Verify tools as above.
+```
+$ java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
+```
+Expected: version lines for each tool, no errors.
 
 ---
 
-## 1.5 Clone the Workshop Repo
+## 1.5 Verify Workshop Materials
 
-Inside the container:
+The workshop repo is already mounted at `/workspace`. Confirm the module directories are present:
 
-1. Navigate to workspace:
-   ```
-   $ cd /workspace
-   ```
-
-2. Clone:
-   ```
-   $ git clone https://github.com/BrightSign-Playground/bs-extension-workshop
-   $ cd bs-extension-workshop
-   ```
-
-3. Verify:
-   ```
-   $ ls workshop/
-   ```
-   Expected: numbered module directories (00 through cleanup).
+```
+$ ls /workspace/workshop/
+```
+Expected: numbered module directories (`00-introduction` through `cleanup`).
 
 ---
 
@@ -314,11 +293,10 @@ Rather than cloning the extension template directly, you will create your own re
 
 ### Back in the container
 
-6. Clone your new repo:
+6. Clone your new repo into the workspace:
    ```
-   $ cd /workspace
-   $ git clone https://github.com/<your-username>/<your-repo-name>
-   $ cd <your-repo-name>
+   $ git clone https://github.com/<your-username>/<your-repo-name> /workspace/my-extension
+   $ cd /workspace/my-extension
    ```
 
 7. Verify contents:
