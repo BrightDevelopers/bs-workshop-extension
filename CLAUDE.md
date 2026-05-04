@@ -85,19 +85,27 @@ mounted as `/workspace` inside the container.
 
 #### Running the Container on macOS / Linux
 
-Prerequisites: Docker Desktop for Mac (or OrbStack), or Docker Engine / Podman on Linux.
+Prerequisites: Docker Desktop for Mac (or OrbStack), Docker Engine, or Podman.
 
+Docker:
 ```
 $ docker run -it --rm \
     -v "$(pwd):/workspace" \
-    -p 8080:8080 \
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+Podman:
+```
+$ podman run -it --rm \
+    -v "$(pwd):/workspace" \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 - `-v "$(pwd):/workspace"` mounts the cloned repo so work persists after the container exits.
-- `-p 8080:8080` forwards port 8080 so the local smoke test (`curl localhost:8080`) works
-  from outside the container.
 - All workshop commands are run inside this container shell at `/workspace`.
+- The Module 4 smoke test (`curl localhost:8080`) runs inside the container and does not
+  require a host port mapping. Add `-p 8080:8080` (or `-p 18080:8080` if 8080 is taken)
+  only if you need to reach port 8080 from your host browser.
 
 > **Note for Apple Silicon (M1/M2/M3):** The container is built for `linux/amd64`. Docker
 > Desktop runs it under Rosetta 2 emulation automatically. Add `--platform linux/amd64`
@@ -105,14 +113,21 @@ $ docker run -it --rm \
 
 #### Running the Container on Windows
 
-Prerequisites: Docker Desktop for Windows with WSL2 backend enabled.
+Prerequisites: Docker Desktop for Windows with WSL2 backend enabled, or Podman Desktop.
 
 Open a PowerShell or Windows Terminal prompt, clone the repo, enter it, then:
 
+Docker:
 ```powershell
 docker run -it --rm `
     -v "${PWD}:/workspace" `
-    -p 8080:8080 `
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+Podman:
+```powershell
+podman run -it --rm `
+    -v "${PWD}:/workspace" `
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 

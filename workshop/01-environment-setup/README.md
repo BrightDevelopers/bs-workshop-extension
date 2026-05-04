@@ -9,7 +9,7 @@
 - Clone the workshop materials
 - Create your own extension repository from the template on GitHub
 
-**Prerequisites:** Module 0 complete. Docker Desktop (macOS/Windows), Docker Engine, or Podman installed. GitHub account (personal or work) — needed in section 1.6.
+**Prerequisites:** Module 0 complete. Docker Desktop, Docker Engine, or Podman installed. GitHub account (personal or work) — needed in section 1.6.
 
 ---
 
@@ -215,21 +215,34 @@ cd bs-extension-workshop
 ### Step 2: Start the container
 
 Run the following from **inside the `bs-extension-workshop` directory**. This mounts your
-current directory as `/workspace` inside the container.
+current directory as `/workspace` inside the container. Use whichever container runtime
+you have installed — `docker` and `podman` accept identical arguments.
 
-**macOS / Linux:**
+**macOS / Linux — Docker:**
 ```
 $ docker run -it --rm \
     -v "$(pwd):/workspace" \
-    -p 8080:8080 \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
-**Windows (PowerShell):**
+**macOS / Linux — Podman:**
+```
+$ podman run -it --rm \
+    -v "$(pwd):/workspace" \
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
+
+**Windows (PowerShell) — Docker:**
 ```powershell
 docker run -it --rm `
     -v "${PWD}:/workspace" `
-    -p 8080:8080 `
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
+
+**Windows (PowerShell) — Podman:**
+```powershell
+podman run -it --rm `
+    -v "${PWD}:/workspace" `
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
@@ -241,6 +254,11 @@ workshop repo. All subsequent commands in this workshop are run here unless stat
 
 > **Warning (Windows):** Use PowerShell or Windows Terminal — not `cmd.exe`. The
 > `${PWD}` expansion does not work in `cmd.exe`.
+
+> **Note:** The Module 4 smoke test (`curl localhost:8080`) runs inside the container and
+> does not require publishing port 8080 to your host. If you want to reach the extension
+> from your host browser, add `-p 8080:8080` to the run command (or `-p 18080:8080` if
+> port 8080 is already in use on your machine).
 
 ### Step 3: Verify tools
 

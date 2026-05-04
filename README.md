@@ -91,9 +91,6 @@ of whether the extension is written in Java, Go, C++, or anything else.
 
 ## Quick Start
 
-> Commands below use `docker`. Substitute `podman` if that's what you have — the syntax
-> is identical.
-
 **1. Clone this repo and enter it**
 
 ```bash
@@ -103,24 +100,41 @@ cd bs-extension-workshop
 
 **2. Start the dev container** (run from inside the cloned directory)
 
-macOS / Linux:
+macOS / Linux — Docker:
 ```bash
 docker run -it --rm \
     -v "$(pwd):/workspace" \
-    -p 8080:8080 \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
-Windows (PowerShell):
+macOS / Linux — Podman:
+```bash
+podman run -it --rm \
+    -v "$(pwd):/workspace" \
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
+
+Windows (PowerShell) — Docker:
 ```powershell
 docker run -it --rm `
     -v "${PWD}:/workspace" `
-    -p 8080:8080 `
+    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+```
+
+Windows (PowerShell) — Podman:
+```powershell
+podman run -it --rm `
+    -v "${PWD}:/workspace" `
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
 You are now at `/workspace` inside the container — which is the cloned repo. Work
 persists on your host after the container exits.
+
+> **Note:** The Module 4 smoke test (`curl localhost:8080`) runs inside the container and
+> does not require publishing port 8080 to your host. If you want to reach the extension
+> from your host browser, add `-p 8080:8080` to the run command (or `-p 18080:8080` if
+> port 8080 is already in use on your machine).
 
 **3. Start at Module 0**
 
