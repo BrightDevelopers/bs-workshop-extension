@@ -67,8 +67,8 @@ Reference: [BrightSign dev environment setup docs](https://github.com/BrightDeve
   docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
   ```
 - [ ] Test the container run command on each workstation OS before the day (docker and podman are interchangeable):
-  - macOS/Linux Docker: `docker run -it --rm -v "$(pwd):/workspace" ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
-  - macOS/Linux Podman: `podman run -it --rm -v "$(pwd):/workspace" ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
+  - macOS/Linux Docker: `docker run -it --rm -v "$(pwd):/workspace" -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
+  - macOS/Linux Podman: `podman run -it --rm -v "$(pwd):/workspace" -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
   - Windows PowerShell Docker: `docker run -it --rm -v "${PWD}:/workspace" ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
   - Windows PowerShell Podman: `podman run -it --rm -v "${PWD}:/workspace" ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
 - [ ] Network access to GitHub (for `git clone` on the host before starting the container), OR pre-cloned repos already on participant workstations

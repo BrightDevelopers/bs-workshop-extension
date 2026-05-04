@@ -89,19 +89,24 @@ Prerequisites: Docker Desktop for Mac (or OrbStack), Docker Engine, or Podman.
 
 Docker:
 ```
-$ docker run -it --rm \
+docker run -it --rm \
     -v "$(pwd):/workspace" \
+    -e HOST_UID=$(id -u) \
+    -e HOST_GID=$(id -g) \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 Podman:
 ```
-$ podman run -it --rm \
+podman run -it --rm \
     -v "$(pwd):/workspace" \
+    -e HOST_UID=$(id -u) \
+    -e HOST_GID=$(id -g) \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 - `-v "$(pwd):/workspace"` mounts the cloned repo so work persists after the container exits.
+- `-e HOST_UID`/`HOST_GID` remaps the container user to match the host user so mounted files are writable.
 - All workshop commands are run inside this container shell at `/workspace`.
 - The Module 4 smoke test (`curl localhost:8080`) runs inside the container and does not
   require a host port mapping. Add `-p 8080:8080` (or `-p 18080:8080` if 8080 is taken)
@@ -134,6 +139,7 @@ podman run -it --rm `
 - Use backtick `` ` `` for line continuation in PowerShell.
 - `${PWD}` expands to the current directory — run this from inside the cloned repo.
 - scp/ssh to the player work from inside the container — no Windows SSH client needed.
+- `HOST_UID`/`HOST_GID` are not needed on Windows — Docker Desktop's WSL2 integration handles file ownership automatically.
 
 > **Warning:** Use PowerShell or Windows Terminal — not `cmd.exe`. `${PWD}` does not
 > expand in `cmd.exe`.

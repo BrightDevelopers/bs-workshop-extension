@@ -222,6 +222,8 @@ you have installed — `docker` and `podman` accept identical arguments.
 ```
 docker run -it --rm \
     -v "$(pwd):/workspace" \
+    -e HOST_UID=$(id -u) \
+    -e HOST_GID=$(id -g) \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
@@ -229,6 +231,8 @@ docker run -it --rm \
 ```
 podman run -it --rm \
     -v "$(pwd):/workspace" \
+    -e HOST_UID=$(id -u) \
+    -e HOST_GID=$(id -g) \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
@@ -253,7 +257,8 @@ workshop repo. All subsequent commands in this workshop are run here unless stat
 > `--platform linux/amd64` to the run command.
 
 > **Warning (Windows):** Use PowerShell or Windows Terminal — not `cmd.exe`. The
-> `${PWD}` expansion does not work in `cmd.exe`.
+> `${PWD}` expansion does not work in `cmd.exe`. Windows users: Docker Desktop's WSL2
+> integration handles file ownership automatically — `HOST_UID`/`HOST_GID` are not needed.
 
 > **Note:** The Module 4 smoke test (`curl localhost:8080`) runs inside the container and
 > does not require publishing port 8080 to your host. If you want to reach the extension
