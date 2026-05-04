@@ -96,17 +96,17 @@ docker run -it --rm \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
-Podman:
+Podman (rootless):
 ```
 podman run -it --rm \
     -v "$(pwd):/workspace" \
-    -e HOST_UID=$(id -u) \
-    -e HOST_GID=$(id -g) \
+    --userns=keep-id \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 - `-v "$(pwd):/workspace"` mounts the cloned repo so work persists after the container exits.
-- `-e HOST_UID`/`HOST_GID` remaps the container user to match the host user so mounted files are writable.
+- Docker uses `HOST_UID`/`HOST_GID` so the entrypoint remaps the internal user to match the host user.
+- Rootless Podman uses `--userns=keep-id` to map the host UID directly into the container without remapping.
 - All workshop commands are run inside this container shell at `/workspace`.
 - The Module 4 smoke test (`curl localhost:8080`) runs inside the container and does not
   require a host port mapping. Add `-p 8080:8080` (or `-p 18080:8080` if 8080 is taken)

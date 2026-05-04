@@ -227,12 +227,11 @@ docker run -it --rm \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
-**macOS / Linux — Podman:**
+**macOS / Linux — Podman (rootless):**
 ```
 podman run -it --rm \
     -v "$(pwd):/workspace" \
-    -e HOST_UID=$(id -u) \
-    -e HOST_GID=$(id -g) \
+    --userns=keep-id \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
@@ -253,12 +252,17 @@ podman run -it --rm `
 You are now at a shell prompt inside the container at `/workspace` — which is your cloned
 workshop repo. All subsequent commands in this workshop are run here unless stated otherwise.
 
+> **Note:** Docker and Podman handle file ownership differently. Docker uses the
+> `HOST_UID`/`HOST_GID` flags so the container's entrypoint can remap the internal user.
+> Rootless Podman uses `--userns=keep-id` to map your host UID directly into the
+> container — no entrypoint remapping needed.
+
 > **Note for Apple Silicon (M1/M2/M3):** If you see a platform warning, add
 > `--platform linux/amd64` to the run command.
 
 > **Warning (Windows):** Use PowerShell or Windows Terminal — not `cmd.exe`. The
 > `${PWD}` expansion does not work in `cmd.exe`. Windows users: Docker Desktop's WSL2
-> integration handles file ownership automatically — `HOST_UID`/`HOST_GID` are not needed.
+> integration handles file ownership automatically — no extra flags needed.
 
 > **Note:** The Module 4 smoke test (`curl localhost:8080`) runs inside the container and
 > does not require publishing port 8080 to your host. If you want to reach the extension
