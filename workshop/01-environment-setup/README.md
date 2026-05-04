@@ -287,22 +287,15 @@ Rather than cloning the extension template directly, you will create your own re
    ```
    Expected: version lines for each tool, no errors.
 
-9. Set your Git identity inside the container (required to commit):
-   ```
-   git config user.email "you@example.com"
-   git config user.name "Your Name"
-   ```
-
-10. Verify the repo contents:
-    ```
-    find . -type f | sort
-    ```
-    Expected: files under `examples/`, `common-scripts/`, `docs/`.
-
 > **Note:** This is your extension repo for the rest of the workshop. You will build your
 > Hello BrightSign extension here in Module 4 and push your changes back to GitHub at the
 > end of the session. The template files in `examples/` are reference material — Module 2
 > walks through them.
+
+> **Tip:** Run all `git` commands (commit, push, pull, branch) in a **separate terminal
+> on your host** — not inside the container. The container is for building and deploying.
+> Your repo directory on the host and `/workspace` inside the container are the same
+> folder, so changes made in either place are immediately visible in both.
 
 ---
 
