@@ -5,11 +5,10 @@
 - Connect your workstation to the workshop network
 - Locate your player's IP address and verify connectivity
 - Confirm the player is configured for extension development
-- Launch the workshop development container
-- Clone the workshop materials
 - Create your own extension repository from the template on GitHub
+- Launch the workshop development container
 
-**Prerequisites:** Module 0 complete. Docker Desktop, Docker Engine, or Podman installed. GitHub account (personal or work) — needed in section 1.6.
+**Prerequisites:** Module 0 complete. Docker Desktop, Docker Engine, or Podman installed. GitHub account (personal or work) — needed in section 1.4.
 
 ---
 
@@ -183,113 +182,7 @@ If any of these fail, ask your WL before proceeding.
 
 ---
 
-## 1.4 Start the Development Container
-
-The workshop uses a pre-built container that includes all required tools: JDK 11, Maven,
-Node.js 20, Go, Git, curl, squashfs-tools, and more. This eliminates tool installation and
-version conflicts across macOS, Windows, and Linux.
-
-> **Note:** The commands below use `docker`. If you have `podman` instead, substitute it
-> everywhere — the syntax is identical.
-
-> **Note:** If your WL has confirmed that tools are pre-installed on your workstation,
-> skip to section 1.5.
-
-### Step 1: Clone the workshop repo on your host
-
-Before starting the container, clone the workshop repo and enter it. The container mounts
-this directory as `/workspace`, so your work persists after the container exits.
-
-**macOS / Linux — open Terminal:**
-```
-git clone https://github.com/BrightSign-Playground/bs-extension-workshop
-cd bs-extension-workshop
-```
-
-**Windows — open PowerShell or Windows Terminal:**
-```powershell
-git clone https://github.com/BrightSign-Playground/bs-extension-workshop
-cd bs-extension-workshop
-```
-
-### Step 2: Start the container
-
-Run the following from **inside the `bs-extension-workshop` directory**. This mounts your
-current directory as `/workspace` inside the container. Use whichever container runtime
-you have installed — `docker` and `podman` accept identical arguments.
-
-**macOS / Linux — Docker:**
-```
-docker run -it --rm \
-    -v "$(pwd):/workspace" \
-    -e HOST_UID=$(id -u) \
-    -e HOST_GID=$(id -g) \
-    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-```
-
-**macOS / Linux — Podman (rootless):**
-```
-podman run -it --rm \
-    -v "$(pwd):/workspace" \
-    --userns=keep-id \
-    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-```
-
-**Windows (PowerShell) — Docker:**
-```powershell
-docker run -it --rm `
-    -v "${PWD}:/workspace" `
-    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-```
-
-**Windows (PowerShell) — Podman:**
-```powershell
-podman run -it --rm `
-    -v "${PWD}:/workspace" `
-    ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
-```
-
-You are now at a shell prompt inside the container at `/workspace` — which is your cloned
-workshop repo. All subsequent commands in this workshop are run here unless stated otherwise.
-
-> **Note:** Docker and Podman handle file ownership differently. Docker uses the
-> `HOST_UID`/`HOST_GID` flags so the container's entrypoint can remap the internal user.
-> Rootless Podman uses `--userns=keep-id` to map your host UID directly into the
-> container — no entrypoint remapping needed.
-
-> **Note for Apple Silicon (M1/M2/M3):** If you see a platform warning, add
-> `--platform linux/amd64` to the run command.
-
-> **Warning (Windows):** Use PowerShell or Windows Terminal — not `cmd.exe`. The
-> `${PWD}` expansion does not work in `cmd.exe`. Windows users: Docker Desktop's WSL2
-> integration handles file ownership automatically — no extra flags needed.
-
-> **Note:** The Module 4 smoke test (`curl localhost:8080`) runs inside the container and
-> does not require publishing port 8080 to your host. If you want to reach the extension
-> from your host browser, add `-p 8080:8080` to the run command (or `-p 18080:8080` if
-> port 8080 is already in use on your machine).
-
-### Step 3: Verify tools
-
-```
-java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
-```
-Expected: version lines for each tool, no errors.
-
----
-
-## 1.5 Verify Workshop Materials
-
-The workshop repo is already mounted at `/workspace`. Confirm the module directories are present:
-
-```
-ls /workspace/workshop/
-```
-Expected: numbered module directories (`00-introduction` through `cleanup`).
-
----
-
-## 1.6 Create Your Extension Repo from the Template
+## 1.4 Create Your Extension Repo and Start the Container
 
 <!-- instructor: WPs need a GitHub account for this step. Confirm everyone has one before starting. Walk through the "Use this template" flow on the projector. -->
 
@@ -318,31 +211,100 @@ Rather than cloning the extension template directly, you will create your own re
 
    GitHub creates a new repo in your account with the full template structure already in place.
 
-### Back in the container
+### Clone your repo and start the container
 
-6. Clone your new repo into the workspace:
+6. Clone your new repo on your workstation and enter it:
+
+   **macOS / Linux:**
    ```
-   git clone https://github.com/<your-username>/<your-repo-name> /workspace/my-extension
-   cd /workspace/my-extension
+   git clone https://github.com/<your-username>/<your-repo-name>
+   cd <your-repo-name>
    ```
 
-7. Verify contents:
+   **Windows (PowerShell or Windows Terminal):**
+   ```powershell
+   git clone https://github.com/<your-username>/<your-repo-name>
+   cd <your-repo-name>
    ```
-   find . -type f | sort
-   ```
-   Expected: files under `examples/`, `common-scripts/`, `docs/`.
 
-8. Set your Git identity inside the container (required to commit):
+7. Start the development container from inside the cloned directory. The container mounts
+   your current directory as `/workspace` so all your work persists after the container exits.
+
+   **macOS / Linux — Docker:**
+   ```
+   docker run -it --rm \
+       -v "$(pwd):/workspace" \
+       -e HOST_UID=$(id -u) \
+       -e HOST_GID=$(id -g) \
+       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+   ```
+
+   **macOS / Linux — Podman (rootless):**
+   ```
+   podman run -it --rm \
+       -v "$(pwd):/workspace" \
+       --userns=keep-id \
+       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+   ```
+
+   **Windows (PowerShell) — Docker:**
+   ```powershell
+   docker run -it --rm `
+       -v "${PWD}:/workspace" `
+       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+   ```
+
+   **Windows (PowerShell) — Podman:**
+   ```powershell
+   podman run -it --rm `
+       -v "${PWD}:/workspace" `
+       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+   ```
+
+   You are now at a shell prompt inside the container at `/workspace`. All subsequent
+   commands in this workshop are run here unless stated otherwise.
+
+   > **Note:** Docker and Podman handle file ownership differently. Docker uses the
+   > `HOST_UID`/`HOST_GID` flags so the container's entrypoint remaps the internal user.
+   > Rootless Podman uses `--userns=keep-id` to map your host UID directly into the
+   > container without remapping.
+
+   > **Note for Apple Silicon (M1/M2/M3):** If you see a platform warning, add
+   > `--platform linux/amd64` to the run command.
+
+   > **Warning (Windows):** Use PowerShell or Windows Terminal — not `cmd.exe`. The
+   > `${PWD}` expansion does not work in `cmd.exe`. Docker Desktop's WSL2 integration
+   > handles file ownership automatically — no extra flags needed.
+
+   > **Note:** The Module 4 smoke test (`curl localhost:8080`) runs inside the container
+   > and does not require publishing port 8080 to your host. If you want to reach the
+   > extension from your host browser, add `-p 8080:8080` to the run command (or
+   > `-p 18080:8080` if port 8080 is already in use on your machine).
+
+8. Verify tools are available:
+   ```
+   java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
+   ```
+   Expected: version lines for each tool, no errors.
+
+9. Set your Git identity inside the container (required to commit):
    ```
    git config user.email "you@example.com"
    git config user.name "Your Name"
    ```
 
-> **Note:** This is your extension repo. You will build your Hello BrightSign extension
-> here in Module 4 and push your changes back to GitHub at the end of the workshop.
-> The template files in `examples/` are reference material — Module 2 walks through them.
+10. Verify the repo contents:
+    ```
+    find . -type f | sort
+    ```
+    Expected: files under `examples/`, `common-scripts/`, `docs/`.
+
+> **Note:** This is your extension repo for the rest of the workshop. You will build your
+> Hello BrightSign extension here in Module 4 and push your changes back to GitHub at the
+> end of the session. The template files in `examples/` are reference material — Module 2
+> walks through them.
 
 ---
 
-You now have a connected insecured player, a running container, the workshop materials cloned, and your own extension repo ready.
+You now have a connected insecured player, a running development container, and your own extension repo ready at `/workspace`.
 Proceed to **[Module 2](../02-understand-template/README.md)**.
