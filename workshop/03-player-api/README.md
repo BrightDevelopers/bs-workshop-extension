@@ -40,7 +40,7 @@ Run these commands against your player. Confirm each response before moving to t
 
 1. Get player info:
    ```
-   $ curl -s http://$PLAYER_IP:8008/api/v1/info | python3 -m json.tool
+   curl -s http://$PLAYER_IP:8008/api/v1/info | python3 -m json.tool
    ```
    Expected output:
    ```json
@@ -53,7 +53,7 @@ Run these commands against your player. Confirm each response before moving to t
 
 2. List installed extensions:
    ```
-   $ curl -s http://$PLAYER_IP:8008/api/v1/extensions | python3 -m json.tool
+   curl -s http://$PLAYER_IP:8008/api/v1/extensions | python3 -m json.tool
    ```
    Expected output (no extensions installed yet):
    ```json
@@ -62,7 +62,7 @@ Run these commands against your player. Confirm each response before moving to t
 
 3. Get system status:
    ```
-   $ curl -s http://$PLAYER_IP:8008/api/v1/system/status | python3 -m json.tool
+   curl -s http://$PLAYER_IP:8008/api/v1/system/status | python3 -m json.tool
    ```
    Expected output:
    ```json
@@ -85,7 +85,7 @@ These are the six operations you will use repeatedly in Modules 6, 7, and 8. Run
 
 **Install** — POST a ZIP file to the extensions endpoint:
 ```
-$ curl -X POST http://$PLAYER_IP:8008/api/v1/extensions \
+curl -X POST http://$PLAYER_IP:8008/api/v1/extensions \
   -F "file=@hello-extension.zip"
 ```
 Expected output:
@@ -95,7 +95,7 @@ Expected output:
 
 **Start** — start a named extension:
 ```
-$ curl -X POST http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/start
+curl -X POST http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/start
 ```
 Expected output:
 ```json
@@ -104,7 +104,7 @@ Expected output:
 
 **Get status** — query the current state of an extension:
 ```
-$ curl -s http://$PLAYER_IP:8008/api/v1/extensions/hello-extension | python3 -m json.tool
+curl -s http://$PLAYER_IP:8008/api/v1/extensions/hello-extension | python3 -m json.tool
 ```
 Expected output:
 ```json
@@ -117,7 +117,7 @@ Expected output:
 
 **Stop** — stop a running extension:
 ```
-$ curl -X POST http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/stop
+curl -X POST http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/stop
 ```
 Expected output:
 ```json
@@ -126,7 +126,7 @@ Expected output:
 
 **Uninstall** — remove the extension from the player:
 ```
-$ curl -X DELETE http://$PLAYER_IP:8008/api/v1/extensions/hello-extension
+curl -X DELETE http://$PLAYER_IP:8008/api/v1/extensions/hello-extension
 ```
 Expected output:
 ```json
@@ -135,7 +135,7 @@ Expected output:
 
 **Get logs** — retrieve stdout/stderr from the extension process:
 ```
-$ curl -s http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/logs
+curl -s http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/logs
 ```
 Expected output: plain text lines from your extension's output.
 

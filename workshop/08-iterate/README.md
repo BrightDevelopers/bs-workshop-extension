@@ -39,8 +39,8 @@ Save the file.
 ## 8.2 Rebuild
 
 ```
-$ cd ~/workshop/hello-extension
-$ mvn clean package -q
+cd ~/workshop/hello-extension
+mvn clean package -q
 ```
 
 Expected: no output (the `-q` flag suppresses Maven's progress lines). A non-zero exit code means a compile error — fix it before continuing.
@@ -52,16 +52,16 @@ Expected: no output (the `-q` flag suppresses Maven's progress lines). A non-zer
 Remove the old artifacts, copy the new JAR into `install/`, and produce a new ZIP:
 
 ```
-$ rm -f install/hello-extension-*.jar
-$ cp target/hello-extension-1.0.0.jar install/
-$ rm -f hello_extension-*.zip
-$ ../common-scripts/pkg-dev.sh install lvm hello_extension
+rm -f install/hello-extension-*.jar
+cp target/hello-extension-1.0.0.jar install/
+rm -f hello_extension-*.zip
+../common-scripts/pkg-dev.sh install lvm hello_extension
 ```
 
 The new ZIP will have a later timestamp in its filename. Confirm:
 
 ```
-$ ls -lh hello_extension-*.zip
+ls -lh hello_extension-*.zip
 ```
 
 ---
@@ -73,7 +73,7 @@ $ ls -lh hello_extension-*.zip
 SSH into the player:
 
 ```
-$ ssh admin@$PLAYER_IP
+ssh admin@$PLAYER_IP
 ```
 
 Stop the extension process:
@@ -99,7 +99,7 @@ Expected: the install script confirms the volume was removed. You can now log ou
 From your workstation, transfer the new ZIP:
 
 ```
-$ scp hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
+scp hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
 ```
 
 On the player, unzip and install:
@@ -136,7 +136,7 @@ Wait 60–90 seconds.
 After reboot:
 
 ```
-$ curl -s http://$PLAYER_IP:8080/ | python3 -m json.tool
+curl -s http://$PLAYER_IP:8080/ | python3 -m json.tool
 ```
 
 Expected:

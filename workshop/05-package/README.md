@@ -34,13 +34,13 @@ The player mounts the squashfs volume at boot. Your binary runs from that mount 
 The `common-scripts/` directory lives in the cloned extension-template. Copy it to your workshop directory:
 
 ```
-$ cp -r ~/extension-template/examples/common-scripts ~/workshop/
+cp -r ~/extension-template/examples/common-scripts ~/workshop/
 ```
 
 Verify the scripts are present:
 
 ```
-$ ls ~/workshop/common-scripts/
+ls ~/workshop/common-scripts/
 ```
 
 Expected output:
@@ -58,11 +58,11 @@ make-extension-lvm  make-extension-ubi  pkg-dev.sh
 The packaging script reads from an `install/` directory you provide. Everything in that directory becomes the squashfs image.
 
 ```
-$ cd ~/workshop/hello-extension
-$ mkdir -p install
-$ cp target/hello-extension-1.0.0.jar install/
-$ cp bsext_init install/
-$ ls install/
+cd ~/workshop/hello-extension
+mkdir -p install
+cp target/hello-extension-1.0.0.jar install/
+cp bsext_init install/
+ls install/
 ```
 
 Expected output:
@@ -80,7 +80,7 @@ bsext_init  hello-extension-1.0.0.jar
 Run `pkg-dev.sh` from inside your extension directory, passing: the install directory, the packaging type (`lvm`), and the extension name:
 
 ```
-$ ../common-scripts/pkg-dev.sh install lvm hello_extension
+../common-scripts/pkg-dev.sh install lvm hello_extension
 ```
 
 Expected output:
@@ -96,8 +96,8 @@ hello_extension-20260321-143022.zip
 Verify the ZIP and its contents:
 
 ```
-$ ls -lh hello_extension-*.zip
-$ unzip -l hello_extension-*.zip
+ls -lh hello_extension-*.zip
+unzip -l hello_extension-*.zip
 ```
 
 Expected ZIP contents:
@@ -122,7 +122,7 @@ Expected ZIP contents:
 Look at the generated install script before transferring it to the player:
 
 ```
-$ unzip -p hello_extension-*.zip ext_hello_extension_install-lvm.sh | head -40
+unzip -p hello_extension-*.zip ext_hello_extension_install-lvm.sh | head -40
 ```
 
 The script performs these steps at install time:

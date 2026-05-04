@@ -45,7 +45,7 @@ The players connect to the travel router via Ethernet through a switch — not W
 
    macOS / Linux:
    ```
-   $ ip addr show   # or: ifconfig
+   ip addr show   # or: ifconfig
    ```
    Windows:
    ```
@@ -55,7 +55,7 @@ The players connect to the travel router via Ethernet through a switch — not W
 
 3. Confirm you have internet access:
    ```
-   $ curl -s https://api.github.com | python3 -m json.tool | head -5
+   curl -s https://api.github.com | python3 -m json.tool | head -5
    ```
    Expected: JSON from GitHub API. If this fails, ask your WL — the router's WAN uplink may need attention.
 
@@ -71,17 +71,17 @@ Each player at your bench has a label showing its IP address. This IP is a stati
 
 2. Set an environment variable — this is used in every module from here on:
    ```
-   $ export PLAYER_IP=<your_player_ip>
+   export PLAYER_IP=<your_player_ip>
    ```
 
    > **Tip:** Save this in a file so it survives a container restart:
    > ```
-   > $ echo "export PLAYER_IP=$PLAYER_IP" >> /workspace/.envrc
+   > echo "export PLAYER_IP=$PLAYER_IP" >> /workspace/.envrc
    > ```
 
 3. Verify the player is reachable:
    ```
-   $ ping -c 3 $PLAYER_IP
+   ping -c 3 $PLAYER_IP
    ```
    Expected:
    ```
@@ -90,7 +90,7 @@ Each player at your bench has a label showing its IP address. This IP is a stati
 
 4. Verify the BrightSign API responds:
    ```
-   $ curl -s http://$PLAYER_IP/api/v1/info | python3 -m json.tool
+   curl -s http://$PLAYER_IP/api/v1/info | python3 -m json.tool
    ```
    Expected: JSON with player model, firmware version, serial number.
 
@@ -167,7 +167,7 @@ This one-time setup wrote the following registry keys and then the player was re
 
 2. Verify SSH from inside the container:
    ```
-   $ ssh brightsign@$PLAYER_IP
+   ssh brightsign@$PLAYER_IP
    ```
    Expected: shell prompt with no password required. Type `exit` to leave.
 
@@ -175,7 +175,7 @@ This one-time setup wrote the following registry keys and then the player was re
 
 3. Verify the DWS API:
    ```
-   $ curl -s http://$PLAYER_IP/api/v1/info | python3 -m json.tool
+   curl -s http://$PLAYER_IP/api/v1/info | python3 -m json.tool
    ```
    Expected: JSON response with `model`, `firmwareVersion`, `serialNumber`.
 
@@ -202,8 +202,8 @@ this directory as `/workspace`, so your work persists after the container exits.
 
 **macOS / Linux — open Terminal:**
 ```
-$ git clone https://github.com/BrightSign-Playground/bs-extension-workshop
-$ cd bs-extension-workshop
+git clone https://github.com/BrightSign-Playground/bs-extension-workshop
+cd bs-extension-workshop
 ```
 
 **Windows — open PowerShell or Windows Terminal:**
@@ -220,14 +220,14 @@ you have installed — `docker` and `podman` accept identical arguments.
 
 **macOS / Linux — Docker:**
 ```
-$ docker run -it --rm \
+docker run -it --rm \
     -v "$(pwd):/workspace" \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
 
 **macOS / Linux — Podman:**
 ```
-$ podman run -it --rm \
+podman run -it --rm \
     -v "$(pwd):/workspace" \
     ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
 ```
@@ -263,7 +263,7 @@ workshop repo. All subsequent commands in this workshop are run here unless stat
 ### Step 3: Verify tools
 
 ```
-$ java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
+java -version && mvn -version && node --version && mksquashfs -version 2>&1 | head -1
 ```
 Expected: version lines for each tool, no errors.
 
@@ -274,7 +274,7 @@ Expected: version lines for each tool, no errors.
 The workshop repo is already mounted at `/workspace`. Confirm the module directories are present:
 
 ```
-$ ls /workspace/workshop/
+ls /workspace/workshop/
 ```
 Expected: numbered module directories (`00-introduction` through `cleanup`).
 
@@ -313,20 +313,20 @@ Rather than cloning the extension template directly, you will create your own re
 
 6. Clone your new repo into the workspace:
    ```
-   $ git clone https://github.com/<your-username>/<your-repo-name> /workspace/my-extension
-   $ cd /workspace/my-extension
+   git clone https://github.com/<your-username>/<your-repo-name> /workspace/my-extension
+   cd /workspace/my-extension
    ```
 
 7. Verify contents:
    ```
-   $ find . -type f | sort
+   find . -type f | sort
    ```
    Expected: files under `examples/`, `common-scripts/`, `docs/`.
 
 8. Set your Git identity inside the container (required to commit):
    ```
-   $ git config user.email "you@example.com"
-   $ git config user.name "Your Name"
+   git config user.email "you@example.com"
+   git config user.name "Your Name"
    ```
 
 > **Note:** This is your extension repo. You will build your Hello BrightSign extension

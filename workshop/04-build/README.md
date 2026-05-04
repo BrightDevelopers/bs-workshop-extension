@@ -46,13 +46,13 @@ Java, Go, and C++ — it packages whatever is in `install/`.
 
 1. Copy the Java starter project into your extension repo:
    ```
-   $ cd /workspace/<your-repo-name>
-   $ cp -r /workspace/bs-extension-workshop/workshop/04-build/java/hello-extension/. .
+   cd /workspace/<your-repo-name>
+   cp -r /workspace/bs-extension-workshop/workshop/04-build/java/hello-extension/. .
    ```
 
 2. Verify the structure:
    ```
-   $ find . -not -path './.git/*' -type f | sort
+   find . -not -path './.git/*' -type f | sort
    ```
    Expected:
    ```
@@ -179,7 +179,7 @@ The Makefile downloads Eclipse Temurin 11 JRE for `linux/aarch64` into `install/
 Run this once — it skips the download if `install/jre/` already exists.
 
 ```
-$ make download-jre
+make download-jre
 ```
 Expected:
 ```
@@ -196,7 +196,7 @@ JRE installed at install/jre
 ### 4.6 Build
 
 ```
-$ make build
+make build
 ```
 Expected:
 ```
@@ -205,7 +205,7 @@ Expected:
 
 Verify the fat JAR:
 ```
-$ ls -lh target/hello-extension-1.0.0.jar
+ls -lh target/hello-extension-1.0.0.jar
 ```
 Expected: file present, larger than 1 KB.
 
@@ -219,12 +219,12 @@ player. This catches most problems before they become harder to debug on remote 
 
 1. Start the extension:
    ```
-   $ java -jar target/hello-extension-1.0.0.jar &
+   java -jar target/hello-extension-1.0.0.jar &
    ```
 
 2. Test the endpoint:
    ```
-   $ curl -s http://localhost:8080/ | python3 -m json.tool
+   curl -s http://localhost:8080/ | python3 -m json.tool
    ```
    Expected:
    ```json
@@ -236,13 +236,13 @@ player. This catches most problems before they become harder to debug on remote 
 
 3. Check the startup log:
    ```
-   $ cat /tmp/hello-extension.log
+   cat /tmp/hello-extension.log
    ```
    Expected: one line with an ISO timestamp.
 
 4. Stop the process:
    ```
-   $ kill %1
+   kill %1
    ```
 
 > **Warning:** If curl returns `Connection refused`, port 8080 is not bound. Check for

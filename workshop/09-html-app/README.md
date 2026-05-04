@@ -38,14 +38,14 @@ The HTML app lives in its own repository, separate from the extension repo.
 ## 9.2 Clone the HTML App
 
 ```
-$ cd /workspace
-$ git clone https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
-$ cd bs-extension-workshop-html-app
+cd /workspace
+git clone https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
+cd bs-extension-workshop-html-app
 ```
 
 Verify contents:
 ```
-$ ls
+ls
 ```
 Expected: `src/`, `package.json`, `webpack.config.js`, `Makefile`, `README.md`
 
@@ -54,7 +54,7 @@ Expected: `src/`, `package.json`, `webpack.config.js`, `Makefile`, `README.md`
 ## 9.3 Project Structure
 
 ```
-$ find . -type f | sort
+find . -type f | sort
 ```
 
 Expected output:
@@ -138,7 +138,7 @@ The `Wait(0, msgPort)` call blocks indefinitely, keeping the BrightScript proces
 **Step 1 — Install dependencies:**
 
 ```
-$ make prep
+make prep
 ```
 
 Expected output: npm install completes without errors.
@@ -146,7 +146,7 @@ Expected output: npm install completes without errors.
 **Step 2 — Build the bundle:**
 
 ```
-$ make build
+make build
 ```
 
 Expected output: webpack produces `dist/bundle.js` and copies `dist/index.html`.
@@ -154,7 +154,7 @@ Expected output: webpack produces `dist/bundle.js` and copies `dist/index.html`.
 **Step 3 — Verify the output:**
 
 ```
-$ ls dist/
+ls dist/
 ```
 
 Expected output:
@@ -170,7 +170,7 @@ bundle.js  index.html
 ## 9.7 Publish to SD
 
 ```
-$ make publish
+make publish
 ```
 
 Expected output: creates `sd/` directory with the following layout:
@@ -194,7 +194,7 @@ The `publish` target copies `autorun.brs` to the SD root and places the built as
 2. Copy `sd/` contents to the SD card root:
 
    ```
-   $ cp -r sd/* /media/$USER/BRIGHTSIGN/
+   cp -r sd/* /media/$USER/BRIGHTSIGN/
    ```
 
    > **Note:** The mount path varies by OS. On macOS it is typically `/Volumes/BRIGHTSIGN`. Use your file manager to confirm the correct mount point.
@@ -202,7 +202,7 @@ The `publish` target copies `autorun.brs` to the SD root and places the built as
 3. Eject the SD card safely before removing it:
 
    ```
-   $ sync && sudo eject /media/$USER/BRIGHTSIGN
+   sync && sudo eject /media/$USER/BRIGHTSIGN
    ```
 
 4. Insert the SD card into the player's SD slot.
@@ -220,7 +220,7 @@ After the player reboots, the display should show the message and uptime returne
 **Step 1 — Confirm the extension is responding:**
 
 ```
-$ curl -s http://$PLAYER_IP:8080/ | python3 -m json.tool
+curl -s http://$PLAYER_IP:8080/ | python3 -m json.tool
 ```
 
 Expected output:
