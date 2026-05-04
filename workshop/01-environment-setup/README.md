@@ -236,7 +236,7 @@ Rather than cloning the extension template directly, you will create your own re
        -v "$(pwd):/workspace" \
        -e HOST_UID=$(id -u) \
        -e HOST_GID=$(id -g) \
-       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+       ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
    ```
 
    **macOS / Linux — Podman (rootless):**
@@ -244,21 +244,21 @@ Rather than cloning the extension template directly, you will create your own re
    podman run -it --rm \
        -v "$(pwd):/workspace" \
        --userns=keep-id \
-       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+       ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
    ```
 
    **Windows (PowerShell) — Docker:**
    ```powershell
    docker run -it --rm `
        -v "${PWD}:/workspace" `
-       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+       ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
    ```
 
    **Windows (PowerShell) — Podman:**
    ```powershell
    podman run -it --rm `
        -v "${PWD}:/workspace" `
-       ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
+       ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
    ```
 
    You are now at a shell prompt inside the container at `/workspace`. All subsequent
