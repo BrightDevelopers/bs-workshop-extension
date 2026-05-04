@@ -3,6 +3,17 @@
 A hands-on workshop that takes development teams from a blank workstation to a working
 BrightSign extension running on a live player — in roughly half a day.
 
+This workshop covers **basic extension development**: building, packaging, deploying, and
+iterating on a BrightSign extension using the standard extension template. It does not
+cover BrightSign Model Package (BMP) development for the NPU — that is a more advanced
+topic requiring separate tooling and is out of scope here.
+
+> **Note:** Compiling BrightSign AI/ML models for the NPU requires an **x86 host machine**.
+> The model compilation tools do not run on ARM-based systems — including Apple Silicon
+> MacBooks (M1/M2/M3) and ARM Linux machines — even inside a container. If your work
+> involves NPU model compilation, you will need a native x86 Linux or Windows machine for
+> that step.
+
 **[Start here → Module 0: Introduction](https://github.com/BrightDevelopers/bs-workshop-extension/blob/fixit/workshop/00-introduction/README.md)**
 
 ---
