@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     git \
+    gosu \
     jq \
     lvm2 \
     maven \
@@ -16,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-17-jdk \
     python3 \
     squashfs-tools \
+    sudo \
     unzip \
     wget \
     && rm -rf /var/lib/apt/lists/*
@@ -36,9 +38,14 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH="/go"
 ENV PATH="${GOPATH}/bin:${PATH}"
 
+# workshop user with UID/GID 1000 (remapped at runtime by entrypoint to match host user)
+RUN (groupadd -g 1000 workshop 2>/dev/null || groupmod -n workshop $(getent group 1000 | cut -d: -f1)) && \
+    (useradd -m -u 1000 -g 1000 -s /bin/bash workshop 2>/dev/null || \
+     usermod -l workshop -d /home/workshop -m $(getent passwd 1000 | cut -d: -f1) 2>/dev/null || true) && \
+    echo 'workshop ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
 # Maven local repo pre-warm: pull the shade plugin and java 11 settings so
 # the first `mvn clean package` inside the workshop does not require internet.
-# This runs a dummy build that forces download of the shade plugin.
 RUN mkdir -p /tmp/mvn-warmup/src/main/java/warmup && \
     echo '<project><modelVersion>4.0.0</modelVersion><groupId>warmup</groupId><artifactId>warmup</artifactId><version>1.0</version><properties><maven.compiler.source>11</maven.compiler.source><maven.compiler.target>11</maven.compiler.target></properties><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.5.1</version><executions><execution><phase>package</phase><goals><goal>shade</goal></goals></execution></executions></plugin></plugins></build></project>' \
         > /tmp/mvn-warmup/pom.xml && \
@@ -47,12 +54,14 @@ RUN mkdir -p /tmp/mvn-warmup/src/main/java/warmup && \
     mvn -f /tmp/mvn-warmup/pom.xml clean package -q 2>/dev/null || true && \
     rm -rf /tmp/mvn-warmup
 
-# Non-root user for workshop work
-RUN useradd -m -s /bin/bash workshop
-USER workshop
 WORKDIR /workspace
 
 # Verify tools
 RUN java -version && mvn -version && node --version && npm --version && go version && mksquashfs -version 2>&1 | head -1
 
+# Entrypoint remaps UID/GID to match the host user at runtime, then drops to workshop user
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/bin/bash"]

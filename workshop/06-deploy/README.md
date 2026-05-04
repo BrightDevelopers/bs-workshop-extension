@@ -17,7 +17,7 @@
 Your `PLAYER_IP` variable was set in Module 1. Confirm it is still set:
 
 ```
-$ echo $PLAYER_IP
+echo $PLAYER_IP
 ```
 
 Expected: an IP address on the local network (e.g., `192.168.1.42`).
@@ -27,7 +27,7 @@ Expected: an IP address on the local network (e.g., `192.168.1.42`).
 Confirm the extension ZIP is present:
 
 ```
-$ ls ~/workshop/hello-extension/hello_extension-*.zip
+ls ~/workshop/hello-extension/hello_extension-*.zip
 ```
 
 Note the filename. You will reference it by the glob pattern `hello_extension-*.zip` throughout this module.
@@ -37,7 +37,7 @@ Note the filename. You will reference it by the glob pattern `hello_extension-*.
 ## 6.2 Copy the ZIP to the Player
 
 ```
-$ scp ~/workshop/hello-extension/hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
+scp ~/workshop/hello-extension/hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
 ```
 
 Enter the SSH password when prompted. The default password is shown on the facilitator's screen or on the player's front display.
@@ -51,7 +51,7 @@ Expected: a progress bar that completes without error.
 ## 6.3 SSH into the Player
 
 ```
-$ ssh admin@$PLAYER_IP
+ssh admin@$PLAYER_IP
 ```
 
 You are now on the player's BusyBox Linux shell. The prompt will look like:
@@ -107,7 +107,7 @@ Exit the SSH session. Wait 60–90 seconds for the player to complete its boot s
 After the player has rebooted, reconnect and check the process list:
 
 ```
-$ ssh admin@$PLAYER_IP
+ssh admin@$PLAYER_IP
 # ps aux | grep hello_extension
 ```
 

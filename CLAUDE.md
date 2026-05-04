@@ -62,30 +62,55 @@ ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 The container includes all tools needed for the full workshop:
 - JDK 11 + Maven 3.6
 - Go 1.21 (for future Go module)
-- Node 14.x + npm (for HTML app module)
+- Node 20.x + npm (for HTML app module)
 - Git, curl, unzip, jq, ssh, scp
 - squashfs-tools (mksquashfs — required for Module 5 packaging)
 - wget, python3 (for JSON pretty-printing in curl exercises)
 
-The Dockerfile for this image lives at `docker/Dockerfile` in this repo.
+The Dockerfile for this image lives at `docker/Dockerfile` in this repo. It is compatible
+with both Docker and Podman — substitute `podman` for `docker` in any command below.
 
-#### Running the Container on macOS
+#### Correct workflow: clone first, then run the container
 
-Prerequisites: Docker Desktop for Mac (or OrbStack).
+The container mounts the workshop repo from the host, so work persists after the container
+exits. Clone and enter the repo **before** starting the container:
 
 ```
-$ docker pull ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
-$ docker run -it --rm \
-    -v "$HOME/workshop:/workspace" \
-    -p 8080:8080 \
+$ git clone https://github.com/BrightDevelopers/bs-workshop-extension
+$ cd bs-workshop-extension
+```
+
+Then start the container from inside that directory. The current working directory is
+mounted as `/workspace` inside the container.
+
+#### Running the Container on macOS / Linux
+
+Prerequisites: Docker Desktop for Mac (or OrbStack), Docker Engine, or Podman.
+
+Docker:
+```
+docker run -it --rm \
+    -v "$(pwd):/workspace" \
+    -e HOST_UID=$(id -u) \
+    -e HOST_GID=$(id -g) \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
-- `-v "$HOME/workshop:/workspace"` mounts a local folder so work persists after the
-  container exits. Replace `$HOME/workshop` with any path you prefer.
-- `-p 8080:8080` forwards port 8080 so the local smoke test (`curl localhost:8080`) works
-  from outside the container.
-- All workshop commands are run inside this container shell.
+Podman (rootless):
+```
+podman run -it --rm \
+    -v "$(pwd):/workspace" \
+    --userns=keep-id \
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+- `-v "$(pwd):/workspace"` mounts the cloned repo so work persists after the container exits.
+- Docker uses `HOST_UID`/`HOST_GID` so the entrypoint remaps the internal user to match the host user.
+- Rootless Podman uses `--userns=keep-id` to map the host UID directly into the container without remapping.
+- All workshop commands are run inside this container shell at `/workspace`.
+- The Module 4 smoke test (`curl localhost:8080`) runs inside the container and does not
+  require a host port mapping. Add `-p 8080:8080` (or `-p 18080:8080` if 8080 is taken)
+  only if you need to reach port 8080 from your host browser.
 
 > **Note for Apple Silicon (M1/M2/M3):** The container is built for `linux/amd64`. Docker
 > Desktop runs it under Rosetta 2 emulation automatically. Add `--platform linux/amd64`
@@ -93,35 +118,34 @@ $ docker run -it --rm \
 
 #### Running the Container on Windows
 
-Prerequisites: Docker Desktop for Windows with WSL2 backend enabled.
+Prerequisites: Docker Desktop for Windows with WSL2 backend enabled, or Podman Desktop.
 
-Open a PowerShell or Windows Terminal prompt:
+Open a PowerShell or Windows Terminal prompt, clone the repo, enter it, then:
 
+Docker:
 ```powershell
-docker pull ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 docker run -it --rm `
-    -v "${env:USERPROFILE}\workshop:/workspace" `
-    -p 8080:8080 `
+    -v "${PWD}:/workspace" `
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+Podman:
+```powershell
+podman run -it --rm `
+    -v "${PWD}:/workspace" `
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
 - Use backtick `` ` `` for line continuation in PowerShell.
-- The workshop directory is created at `%USERPROFILE%\workshop` (e.g.,
-  `C:\Users\YourName\workshop`).
+- `${PWD}` expands to the current directory — run this from inside the cloned repo.
 - scp/ssh to the player work from inside the container — no Windows SSH client needed.
+- `HOST_UID`/`HOST_GID` are not needed on Windows — Docker Desktop's WSL2 integration handles file ownership automatically.
+
+> **Warning:** Use PowerShell or Windows Terminal — not `cmd.exe`. `${PWD}` does not
+> expand in `cmd.exe`.
 
 > **Note:** If Docker Desktop is not available, participants can use WSL2 directly with
 > Ubuntu and install tools manually (see Manual Install fallback in the facilitator guide).
-
-#### Cloning the Workshop Repo Inside the Container
-
-Once inside the container:
-
-```
-$ cd /workspace
-$ git clone https://github.com/BrightDevelopers/bs-workshop-extension
-$ cd bs-workshop-extension
-```
 
 ### Manual Tool Install (Fallback — No Container)
 

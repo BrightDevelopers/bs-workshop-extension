@@ -18,7 +18,7 @@
 From inside the cloned `extension-template` directory, list every file:
 
 ```
-$ find . -type f | sort
+find . -type f | sort
 ```
 
 Expected output:
@@ -54,7 +54,7 @@ There is no build system at the root level. Each example in `examples/` is self-
 Read the Go example's init script:
 
 ```
-$ cat examples/hello_world-go-extension/bsext_init
+cat examples/hello_world-go-extension/bsext_init
 ```
 
 Walk through each part:
@@ -85,7 +85,7 @@ Standard SysV init interface. The player calls `bsext_init start` to start your 
 Read the packaging script:
 
 ```
-$ cat examples/common-scripts/pkg-dev.sh
+cat examples/common-scripts/pkg-dev.sh
 ```
 
 What this script does, in order:
@@ -122,7 +122,7 @@ Do not include build artifacts, source files, or development tools. The squashfs
 List the Go example directory:
 
 ```
-$ ls examples/hello_world-go-extension/
+ls examples/hello_world-go-extension/
 ```
 
 Expected output:
@@ -138,7 +138,7 @@ Read `main.go`. It does three things:
 Cross-compile the binary for BrightSign's ARM64 processor:
 
 ```
-$ GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o hello_world_go main.go
+GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o hello_world_go main.go
 ```
 
 > **Note:** BrightSign players run ARM64 Linux. Your development machine is almost certainly x86-64. `CGO_ENABLED=0` produces a fully static binary with no libc dependency — the safest approach for cross-compilation. Other languages require a cross-compiler toolchain or a Docker container with the BrightSign SDK.
@@ -146,9 +146,9 @@ $ GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o hello_world_go main.go
 Package the extension:
 
 ```
-$ mkdir -p install
-$ cp hello_world_go bsext_init install/
-$ ../common-scripts/pkg-dev.sh install lvm hello_world_go
+mkdir -p install
+cp hello_world_go bsext_init install/
+../common-scripts/pkg-dev.sh install lvm hello_world_go
 ```
 
 Expected output:

@@ -61,14 +61,17 @@ Reference: [BrightSign dev environment setup docs](https://github.com/BrightDeve
 
 ### Workstations (Container Path — Recommended)
 
-- [ ] Docker Desktop installed and running (macOS/Windows) or Docker Engine (Linux)
+- [ ] Docker Desktop, Docker Engine, or Podman installed and running
 - [ ] Container image pre-pulled to avoid download time during Module 1:
   ```
   docker pull ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest
   ```
-- [ ] Test the container run command on each workstation OS before the day
-- [ ] `$HOME/workshop` (macOS/Linux) or `%USERPROFILE%\workshop` (Windows) directory exists as the volume mount point
-- [ ] Network access to GitHub (for `git clone` inside the container), OR pre-cloned repos staged in the volume mount directory
+- [ ] Test the container run command on each workstation OS before the day:
+  - macOS/Linux Docker: `docker run -it --rm -v "$(pwd):/workspace" -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
+  - macOS/Linux Podman (rootless): `podman run -it --rm -v "$(pwd):/workspace" --userns=keep-id ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
+  - Windows PowerShell Docker: `docker run -it --rm -v "${PWD}:/workspace" ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
+  - Windows PowerShell Podman: `podman run -it --rm -v "${PWD}:/workspace" ghcr.io/brightsign-playground/bs-extension-workshop-devenv:latest`
+- [ ] Network access to GitHub (for `git clone` on the host before starting the container), OR pre-cloned repos already on participant workstations
 
 ### Workstations (Manual Install Fallback)
 
