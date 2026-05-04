@@ -11,8 +11,8 @@ topic requiring separate tooling and is out of scope here.
 > **Note:** Compiling BrightSign AI/ML models for the NPU requires an **x86 host machine**.
 > The model compilation tools do not run on ARM-based systems — including Apple Silicon
 > MacBooks (M1/M2/M3) and ARM Linux machines — even inside a container. If your work
-> involves NPU model compilation, you will need a native x86 Linux or Windows machine for
-> that step.
+> involves NPU model compilation, you will need a native x86 Linux machine for that step.
+> Windows is not supported.
 
 **[Start here → Module 0: Introduction](https://github.com/BrightDevelopers/bs-workshop-extension/blob/fixit/workshop/00-introduction/README.md)**
 
