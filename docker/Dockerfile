@@ -39,18 +39,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     usbutils \
     wget \
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     xxd \
     zip \
     zoxide \
     zstd \
-=======
-    zip \
->>>>>>> Stashed changes
-=======
-    zip \
->>>>>>> Stashed changes
     && rm -rf /var/lib/apt/lists/*
 
 # GitHub CLI
