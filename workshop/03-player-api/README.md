@@ -47,13 +47,16 @@ Port 22 is how you get in and move files. Port 8080 is how you talk to your exte
 
    No password is required — the player was configured with `SetLoginPassword("none")` during setup.
 
-   Expected prompt:
+   You will see log output from the running autorun. Work through the prompt sequence to reach the Linux shell:
 
    ```
-   BrightSign:/#
+   ^C         ← Ctrl-C: interrupts the autorun, drops to BrightScript debugger
+   BrightScript Debugger> ^C    ← Ctrl-C again: exits the debugger
+   BrightSign> exit             ← exit: drops to Linux root shell (insecured players only)
+   #                            ← you are now root on the Linux shell
    ```
 
-   This is a BusyBox Linux shell. Standard commands work: `ls`, `ps`, `cat`, `grep`.
+   Standard BusyBox commands work here: `ls`, `ps`, `cat`, `grep`.
 
 2. Exit the session when done:
 
@@ -67,16 +70,22 @@ Port 22 is how you get in and move files. Port 8080 is how you talk to your exte
 
 ## 3.3 Transfer the Extension ZIP
 
-The extension package is a ZIP file produced by the packaging step (Module 5). Transfer it to `/usr/local/` on the player using `scp`:
+The extension package is a ZIP file produced by the packaging step (Module 5). The player's `/usr/local/` is not directly writable over `scp` — copy to the SD card mount point first:
 
 ```
-$ scp hello_extension-*.zip brightsign@$PLAYER_IP:/usr/local/
+$ scp hello_extension-*.zip brightsign@$PLAYER_IP:/storage/sd/
 ```
 
 Expected: a progress line that completes without error.
 
 ```
-hello_extension-20260321-143022.zip    100%   58MB   4.2MB/s   00:13
+hello_extension-1747123456.zip    100%   58MB   4.2MB/s   00:13
+```
+
+Once you are at the Linux root shell (section 3.2), unzip directly from the SD card into `/usr/local/`:
+
+```
+# cd /usr/local && unzip /storage/sd/hello_extension-*.zip
 ```
 
 > **Warning:** If `scp` fails with "Connection refused" or "Permission denied", SSH is not enabled or the password is wrong. Resolve this before Module 6 — every deployment step requires SSH access.

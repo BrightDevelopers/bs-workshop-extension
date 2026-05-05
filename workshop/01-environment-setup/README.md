@@ -189,9 +189,13 @@ This one-time setup wrote the following registry keys and then the player was re
    ```
    ssh brightsign@$PLAYER_IP
    ```
-   Expected: shell prompt with no SSH password (the autorun.brs called `SetLoginPassword("none")`). Type `exit` to leave.
-
-   > **Note:** `exit` at the BrightSign shell (`BrightSign>`) reboots the player on a secure device. On these insecured players, `exit` drops to a Linux root shell (`#`). Type `exit` again to reboot.
+   No password prompt — the autorun.brs called `SetLoginPassword("none")`. You will see log output from the running autorun. Work through the prompt sequence:
+   ```
+   ^C                        ← drops to BrightScript debugger
+   BrightScript Debugger> ^C ← exits the debugger
+   BrightSign> exit          ← drops to Linux root shell (insecured player)
+   #                         ← you are root; type exit again to disconnect
+   ```
 
 3. Verify the DWS API:
    ```

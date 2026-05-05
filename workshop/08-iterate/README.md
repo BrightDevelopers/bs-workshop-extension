@@ -91,21 +91,19 @@ Extension hello_extension uninstalled. Reboot to complete removal.
 
 ## 8.5 Copy and Reinstall
 
-From your workstation, transfer the new ZIP:
+From your workstation, copy the new ZIP to the SD card:
 
 ```
-scp hello_extension-*.zip brightsign@$PLAYER_IP:/usr/local/
+scp hello_extension-*.zip brightsign@$PLAYER_IP:/storage/sd/
 ```
 
-On the player, unzip and install:
+On the player, unzip directly from the SD card into `/usr/local/` and install:
 
 ```
 # cd /usr/local
-# unzip hello_extension-NEWTIMESTAMP.zip
+# unzip /storage/sd/hello_extension-*.zip
 # bash ext_hello_extension_install-lvm.sh
 ```
-
-Replace `NEWTIMESTAMP` with the timestamp in the new ZIP filename.
 
 Expected install output:
 
@@ -156,10 +154,10 @@ flowchart TD
     A["1. Edit source code"] --> B["2. Rebuild\nmvn clean package"]
     B --> C["3. Update install/\ncopy new JAR or binary"]
     C --> D["4. Repackage\npkg-dev.sh → new ZIP"]
-    D --> E["5. scp ZIP to player"]
-    E --> F["6. SSH: bsext_init stop"]
-    F --> G["7. SSH: uninstall old version"]
-    G --> H["8. SSH: unzip + install"]
+    D --> E["5. scp ZIP to /storage/sd on player"]
+    E --> F["6. SSH to Linux shell\nCtrl-C · Ctrl-C · exit"]
+    F --> G["7. SSH: uninstall.sh"]
+    G --> H["8. SSH: cd /usr/local\nunzip from /storage/sd + install"]
     H --> I["9. SSH: reboot"]
     I --> J["10. curl to verify"]
     J -.->|"make another change"| A

@@ -36,8 +36,10 @@ Note the filename. You will reference it by the glob pattern `hello_extension-*.
 
 ## 6.2 Copy the ZIP to the Player
 
+The player's `/usr/local/` is not directly writable over `scp` — copy to the SD card mount point and unzip from there:
+
 ```
-scp hello_extension-*.zip brightsign@$PLAYER_IP:/usr/local/
+scp hello_extension-*.zip brightsign@$PLAYER_IP:/storage/sd/
 ```
 
 No password is required — the player was configured with `SetLoginPassword("none")` during setup.
@@ -54,28 +56,28 @@ Expected: a progress bar that completes without error.
 ssh brightsign@$PLAYER_IP
 ```
 
-You are now on the player's BusyBox Linux shell. The prompt will look like:
+You will see log output from the running autorun. Work through the prompt sequence to reach the Linux shell:
 
 ```
-BrightSign:/#
+^C         ← Ctrl-C: interrupts the autorun, drops to BrightScript debugger
+BrightScript Debugger> ^C    ← Ctrl-C again: exits the debugger
+BrightSign> exit             ← exit: drops to Linux root shell (insecured players only)
+#                            ← you are now root on the Linux shell
 ```
 
-All commands in sections 6.4 and 6.5 run on the player, not your workstation.
+All commands in sections 6.4 and 6.5 run on the player at this `#` prompt.
 
 ---
 
 ## 6.4 Install the Extension
 
-Change to `/usr/local/`, unzip the package, and run the install script:
+Unzip directly from the SD card into `/usr/local/` and run the install script:
 
 ```
 # cd /usr/local
-# ls hello_extension-*.zip
-# unzip hello_extension-TIMESTAMP.zip
+# unzip /storage/sd/hello_extension-*.zip
 # bash ext_hello_extension_install-lvm.sh
 ```
-
-Replace `TIMESTAMP` with the actual timestamp in the filename from the previous `ls`.
 
 Expected output from the install script:
 
@@ -86,7 +88,7 @@ Writing squashfs image...
 Installation complete. Reboot to activate.
 ```
 
-> **Warning:** If the checksum verification step prints `FAILED`, the ZIP was corrupted during transfer. Exit the SSH session, re-run the `scp` command from section 6.2, unzip again, and retry the install script.
+> **Warning:** If the checksum verification step prints `FAILED`, the ZIP was corrupted during transfer. Exit the SSH session, re-run the `scp` command from section 6.2, and retry from the `unzip` step.
 
 ---
 
