@@ -1,148 +1,167 @@
-<!-- instructor: run these curl commands live against your demo player. Participants follow along. This builds confidence before they deploy their own extension. -->
+<!-- instructor: run all commands in this module live against your demo player while participants watch. They do not have their own extension yet — this builds the mental model before Module 6. The facilitator demo player should have the finished extension already deployed from pre-session setup. -->
 
-# Module 3: The BrightSign Player API
+# Module 3: Accessing the Player
 
 **Duration:** 15 minutes
+
 **Learning Objectives:**
-- Distinguish between the control API port and the extension server port
-- Query player info, extension list, and system status via curl
-- Execute the full extension lifecycle (install, start, stop, uninstall) using API calls
+- SSH into a BrightSign player from the command line
+- Transfer a file to the player using scp
+- Run the extension installer and verify the result with curl
 
 **Prerequisites:** Module 2 complete. `PLAYER_IP` environment variable set.
 
+> **Note:** This module is a facilitator-led demo. The facilitator runs every command against the demo player while participants follow along. You will run the same steps yourself with your own extension in Module 6.
+
 ---
 
-## 3.1 Two Ports, Two Purposes
+## 3.1 Two Interfaces
 
-The player exposes two HTTP interfaces. They serve different roles and you will use both throughout the rest of the workshop.
+The player exposes two network interfaces you will use throughout the workshop:
 
 ```mermaid
 graph LR
     ws["Your Workstation"]
 
     subgraph player["BrightSign Player"]
-        api["port 8008\nControl API\ninstall · start · stop · logs\nplayer info · system status"]
-        ext["port 8080\nExtension Server\nyour HTTP endpoints\n(only active when extension runs)"]
+        ssh["port 22\nSSH + scp\nshell access · file transfer"]
+        ext["port 8080\nExtension HTTP server\nyour code\n(active when extension runs)"]
     end
 
-    ws -->|"manage"| api
-    ws -.->|"verify / test"| ext
+    ws -->|"ssh / scp"| ssh
+    ws -.->|"curl to verify"| ext
     html["HTML App\non player"] -->|"fetch data"| ext
 ```
 
-Requests to `:8008` go to BrightSign firmware. Requests to `:8080` go to your code.
+Port 22 is how you get in and move files. Port 8080 is how you talk to your extension once it is running.
 
 ---
 
-## 3.2 Query the Player
+## 3.2 SSH into the Player
 
-Run these commands against your player. Confirm each response before moving to the next.
+1. From your workstation, open an SSH session to the player:
 
-1. Get player info:
    ```
-   curl -s http://$PLAYER_IP:8008/api/v1/info | python3 -m json.tool
-   ```
-   Expected output:
-   ```json
-   {
-       "model": "XT1144",
-       "firmwareVersion": "9.x.x",
-       "serialNumber": "..."
-   }
+   $ ssh admin@$PLAYER_IP
    ```
 
-2. List installed extensions:
+   Enter the password when prompted. The default password is printed on the player's front display or shown on the facilitator's slide.
+
+   Expected prompt:
+
    ```
-   curl -s http://$PLAYER_IP:8008/api/v1/extensions | python3 -m json.tool
-   ```
-   Expected output (no extensions installed yet):
-   ```json
-   []
+   BrightSign:/#
    ```
 
-3. Get system status:
+   This is a BusyBox Linux shell. Standard commands work: `ls`, `ps`, `cat`, `grep`.
+
+2. Exit the session when done:
+
    ```
-   curl -s http://$PLAYER_IP:8008/api/v1/system/status | python3 -m json.tool
-   ```
-   Expected output:
-   ```json
-   {
-       "uptime": 12345,
-       "temperature": "...",
-       "storage": {...}
-   }
+   # exit
    ```
 
-> **Note:** `python3 -m json.tool` pretty-prints JSON. It is available on every Python 3 installation with no extra packages.
-
-> **Tip:** If you prefer `jq`, install it with your system package manager (`apt install jq`, `brew install jq`, etc.) and substitute `| jq .` anywhere you see `| python3 -m json.tool`.
+> **Note:** If `ssh` fails with "Connection refused", SSH is not enabled on this player. Ask your facilitator — enabling SSH requires a one-time setup step on the player (covered in the pre-workshop setup guide).
 
 ---
 
-## 3.3 Extension Lifecycle via API
+## 3.3 Transfer the Extension ZIP
 
-These are the six operations you will use repeatedly in Modules 6, 7, and 8. Run through them now against the demo player so the pattern is familiar before you use your own extension.
+The extension package is a ZIP file produced by the packaging step (Module 5). Transfer it to `/usr/local/` on the player using `scp`:
 
-**Install** — POST a ZIP file to the extensions endpoint:
 ```
-curl -X POST http://$PLAYER_IP:8008/api/v1/extensions \
-  -F "file=@hello-extension.zip"
+$ scp hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
 ```
+
+Expected: a progress line that completes without error.
+
+```
+hello_extension-20260321-143022.zip    100%   58MB   4.2MB/s   00:13
+```
+
+> **Warning:** If `scp` fails with "Connection refused" or "Permission denied", SSH is not enabled or the password is wrong. Resolve this before Module 6 — every deployment step requires SSH access.
+
+---
+
+## 3.4 Install the Extension
+
+1. SSH into the player:
+
+   ```
+   $ ssh admin@$PLAYER_IP
+   ```
+
+2. Change to `/usr/local/`, list the ZIP to confirm the transfer, unzip it, and run the install script:
+
+   ```
+   # cd /usr/local
+   # ls hello_extension-*.zip
+   # unzip hello_extension-TIMESTAMP.zip
+   # bash ext_hello_extension_install-lvm.sh
+   ```
+
+   Replace `TIMESTAMP` with the actual timestamp in the filename from the `ls` output.
+
+   Expected install output:
+
+   ```
+   Verifying checksum... OK
+   Creating logical volume hello_extension...
+   Writing squashfs image...
+   Installation complete. Reboot to activate.
+   ```
+
+> **Warning:** If checksum verification prints `FAILED`, the ZIP was corrupted during transfer. Exit, re-run the `scp` command, and retry from the unzip step.
+
+> **Note:** The install script writes a squashfs image to an LVM logical volume on the player's eMMC. At next boot the player mounts it read-only at `/var/volatile/bsext/hello_extension/`. You never edit this script — it is generated by the packaging step.
+
+---
+
+## 3.5 Reboot
+
+```
+# reboot
+```
+
+Exit the SSH session. Wait 60–90 seconds for the player to complete its boot sequence and initialize the BrightSign runtime. The extension starts automatically once the runtime is ready.
+
+---
+
+## 3.6 Verify
+
+After the player has rebooted, confirm the extension is responding from your workstation:
+
+```
+$ curl -s http://$PLAYER_IP:8080/ | python3 -m json.tool
+```
+
 Expected output:
-```json
-{"status": "installed", "name": "hello-extension"}
-```
 
-**Start** — start a named extension:
-```
-curl -X POST http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/start
-```
-Expected output:
-```json
-{"status": "running"}
-```
-
-**Get status** — query the current state of an extension:
-```
-curl -s http://$PLAYER_IP:8008/api/v1/extensions/hello-extension | python3 -m json.tool
-```
-Expected output:
 ```json
 {
-    "name": "hello-extension",
-    "status": "running",
-    "pid": 1234
+    "message": "Hello from BrightSign!",
+    "uptime_seconds": 12
 }
 ```
 
-**Stop** — stop a running extension:
-```
-curl -X POST http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/stop
-```
-Expected output:
-```json
-{"status": "stopped"}
-```
+The extension is installed, running, and serving HTTP on port 8080.
 
-**Uninstall** — remove the extension from the player:
-```
-curl -X DELETE http://$PLAYER_IP:8008/api/v1/extensions/hello-extension
-```
-Expected output:
-```json
-{"status": "uninstalled"}
-```
-
-**Get logs** — retrieve stdout/stderr from the extension process:
-```
-curl -s http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/logs
-```
-Expected output: plain text lines from your extension's output.
-
-> **Note:** These exact commands are used in Modules 6, 7, and 8. Bookmark this module or keep this terminal window open.
+> **Tip:** The `uptime_seconds` field increments with each second the extension process has been alive. A small value (under 120) confirms the extension started cleanly after this reboot rather than carrying state from a previous run.
 
 ---
 
-## 3.4 Key Takeaway
+## 3.7 Key Takeaway
 
-The player API does not change based on what language your extension is written in or what your extension does. The packaging and deployment workflow covered in Modules 5 through 8 is identical for every extension. This is what the template from Module 1 standardizes — it handles the packaging so you only write application code.
+The complete deployment workflow is:
+
+```
+scp ZIP to player → ssh in → unzip → bash install-lvm.sh → reboot → curl to verify
+```
+
+This sequence is identical for every extension regardless of language. The squashfs packaging and LVM deployment mechanism does not care what runtime is inside the image — Java, Go, C++, or anything else goes through the same steps.
+
+You will run this exact sequence yourself in Module 6 with the extension you build in Module 4.
+
+---
+
+**Next:** [Module 4 — Build the Extension Binary](../04-build/README.md)

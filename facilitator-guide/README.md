@@ -27,7 +27,7 @@ The travel router bridges the venue internet to the local workshop LAN. Players 
 
 **Verification:**
 - [ ] From a workstation on the router WiFi: ping each player IP
-- [ ] From a workstation: `curl http://<player_ip>/api/v1/info` returns JSON
+- [ ] From a workstation: `ssh admin@<player_ip> exit` succeeds (SSH is reachable)
 - [ ] From a workstation: internet access works (GitHub, Docker Hub reachable)
 
 **Labels and handouts:**
