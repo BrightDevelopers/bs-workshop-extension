@@ -14,20 +14,20 @@
 
 ## 8.1 Make a Code Change
 
-On your workstation, open `~/workshop/hello-extension/src/main/java/com/example/HelloExtension.java`.
+Open `src/main/java/com/brightsign/workshop/HelloExtension.java` in your editor (the file is in your development repo at `/workspace`).
 
-Change the message constant:
+In `handleRoot`, change the message string:
 
 From:
 
 ```java
-private static final String MESSAGE = "Hello from BrightSign!";
+String body = "{\"message\":\"Hello from BrightSign!\",\"uptime_seconds\":" + uptimeSeconds + "}";
 ```
 
 To:
 
 ```java
-private static final String MESSAGE = "Hello from BrightSign! (v2)";
+String body = "{\"message\":\"Hello from BrightSign! (v2)\",\"uptime_seconds\":" + uptimeSeconds + "}";
 ```
 
 Save the file.
@@ -39,23 +39,19 @@ Save the file.
 ## 8.2 Rebuild
 
 ```
-cd ~/workshop/hello-extension
-mvn clean package -q
+make build
 ```
 
-Expected: no output (the `-q` flag suppresses Maven's progress lines). A non-zero exit code means a compile error — fix it before continuing.
+Expected: no output (`-q` suppresses Maven's progress lines). A non-zero exit code means a compile error — fix it before continuing.
 
 ---
 
 ## 8.3 Repackage
 
-Remove the old artifacts, copy the new JAR into `install/`, and produce a new ZIP:
+Produce a new ZIP with the updated JAR:
 
 ```
-rm -f install/hello-extension-*.jar
-cp target/hello-extension-1.0.0.jar install/
-rm -f hello_extension-*.zip
-../common-scripts/pkg-dev.sh install lvm hello_extension
+make package
 ```
 
 The new ZIP will have a later timestamp in its filename. Confirm:

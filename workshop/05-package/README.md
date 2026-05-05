@@ -29,18 +29,13 @@ The player mounts the squashfs volume at boot. Your binary runs from that mount 
 
 ---
 
-## 5.2 Copy the Packaging Scripts
+## 5.2 Verify the Packaging Scripts
 
-The `common-scripts/` directory lives in the cloned extension-template. Copy it to your workshop directory:
-
-```
-cp -r ~/extension-template/examples/common-scripts ~/workshop/
-```
-
-Verify the scripts are present:
+The packaging scripts come from the extension-template and are already present in your
+development repo at `examples/common-scripts/`. Verify they are there:
 
 ```
-ls ~/workshop/common-scripts/
+ls examples/common-scripts/
 ```
 
 Expected output:
@@ -57,8 +52,9 @@ make-extension-lvm  make-extension-ubi  pkg-dev.sh
 
 The packaging script reads from an `install/` directory you provide. Everything in that directory becomes the squashfs image.
 
+All commands below run from the repo root (`/workspace` inside the container).
+
 ```
-cd ~/workshop/hello-extension
 mkdir -p install
 cp target/hello-extension-1.0.0.jar install/
 cp bsext_init install/
@@ -77,11 +73,15 @@ bsext_init  hello-extension-1.0.0.jar
 
 ## 5.4 Run the Packaging Script
 
-Run `pkg-dev.sh` from inside your extension directory, passing: the install directory, the packaging type (`lvm`), and the extension name:
+Run `pkg-dev.sh` from the repo root, passing: the install directory, the packaging type (`lvm`), and the extension name:
 
 ```
-../common-scripts/pkg-dev.sh install lvm hello_extension
+examples/common-scripts/pkg-dev.sh install lvm hello_extension
 ```
+
+> **Tip:** `make package` runs steps 5.3 and 5.4 automatically (build → download JRE →
+> copy to install/ → run pkg-dev.sh). Use the manual steps above to understand what it
+> does; use `make package` for day-to-day iteration.
 
 Expected output:
 

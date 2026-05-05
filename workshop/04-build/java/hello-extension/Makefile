@@ -5,7 +5,7 @@ JAR_NAME       := hello-extension-1.0.0.jar
 JAR_PATH       := target/$(JAR_NAME)
 INSTALL_DIR    := install
 JRE_DIR        := $(INSTALL_DIR)/jre
-COMMON_SCRIPTS := ../common-scripts
+COMMON_SCRIPTS := examples/common-scripts
 
 # Eclipse Temurin 11 JRE for BrightSign (ARM64 Linux).
 # This JRE is bundled inside the squashfs image — the player has no system Java.
@@ -38,9 +38,8 @@ download-jre: ## Download Temurin JRE 11 for linux/aarch64 into install/jre/
 package: build download-jre ## Package extension into a deployable squashfs ZIP
 	@if [ ! -d "$(COMMON_SCRIPTS)" ]; then \
 		echo "ERROR: $(COMMON_SCRIPTS) not found."; \
-		echo "Clone the extension template first:"; \
-		echo "  git clone https://github.com/brightsign/extension-template"; \
-		echo "Then ensure common-scripts is accessible at $(COMMON_SCRIPTS)"; \
+		echo "Run make from the root of your extension repo."; \
+		echo "examples/common-scripts/ must be present (it comes from the template)."; \
 		exit 1; \
 	fi
 	mkdir -p $(INSTALL_DIR)

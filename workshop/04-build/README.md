@@ -44,23 +44,20 @@ Java, Go, and C++ — it packages whatever is in `install/`.
 
 ### 4.1 Create the Project
 
-1. Copy the Java starter project into your extension repo:
-   ```
-   cd /workspace/<your-repo-name>
-   cp -r /workspace/bs-extension-workshop/workshop/04-build/java/hello-extension/. .
-   ```
+Your development repo is already mounted at `/workspace` inside the container. Copy the
+Java starter project from the template examples into the repo root:
 
-2. Verify the structure:
-   ```
-   find . -not -path './.git/*' -type f | sort
-   ```
-   Expected:
-   ```
-   ./Makefile
-   ./bsext_init
-   ./pom.xml
-   ./src/main/java/com/brightsign/workshop/HelloExtension.java
-   ```
+```
+cp -r examples/hello_world-java-extension/. .
+```
+
+Verify the key project files are in place:
+
+```
+ls Makefile bsext_init pom.xml src/main/java/com/brightsign/workshop/HelloExtension.java
+```
+
+Expected: all four files listed without error.
 
 ### 4.2 Walk pom.xml
 

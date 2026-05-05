@@ -8,7 +8,7 @@
 - Transfer and install the extension package on a live player
 - Start the extension and confirm it is running
 
-**Prerequisites:** Module 5 complete. Extension ZIP in `~/workshop/hello-extension/`.
+**Prerequisites:** Module 5 complete. Extension ZIP in your development repo (`/workspace`).
 
 ---
 
@@ -27,7 +27,7 @@ Expected: an IP address on the local network (e.g., `192.168.1.42`).
 Confirm the extension ZIP is present:
 
 ```
-ls ~/workshop/hello-extension/hello_extension-*.zip
+ls hello_extension-*.zip
 ```
 
 Note the filename. You will reference it by the glob pattern `hello_extension-*.zip` throughout this module.
@@ -37,7 +37,7 @@ Note the filename. You will reference it by the glob pattern `hello_extension-*.
 ## 6.2 Copy the ZIP to the Player
 
 ```
-scp ~/workshop/hello-extension/hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
+scp hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
 ```
 
 Enter the SSH password when prompted. The default password is shown on the facilitator's screen or on the player's front display.

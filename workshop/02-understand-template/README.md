@@ -34,6 +34,11 @@ Expected output:
 ./examples/common-scripts/pkg-dev.sh
 ./examples/hello_world-go-extension/bsext_init
 ./examples/hello_world-go-extension/main.go
+./examples/hello_world-java-extension/bsext_init
+./examples/hello_world-java-extension/Makefile
+./examples/hello_world-java-extension/pom.xml
+./examples/hello_world-java-extension/README.md
+./examples/hello_world-java-extension/src/main/java/com/brightsign/workshop/HelloExtension.java
 ./examples/hello_world-ts-extension/bsext_init
 ./examples/hello_world-ts-extension/package.json
 ./examples/hello_world-ts-extension/src/index.ts
@@ -43,7 +48,9 @@ Expected output:
 ./examples/time_publisher-cpp-extension/src/main.cpp
 ```
 
-There is no build system at the root level. Each example in `examples/` is self-contained. The only shared code is the packaging scripts in `examples/common-scripts/`.
+There is no build system at the root level yet. Each example in `examples/` is self-contained. The only shared code is the packaging scripts in `examples/common-scripts/`.
+
+In Module 4 you will copy the contents of `examples/hello_world-java-extension/` to the repo root and build from there. The Makefile in that example is designed to run from the repo root so it can reach `examples/common-scripts/`.
 
 ---
 
@@ -171,9 +178,12 @@ The template works for any language that can produce a runnable binary. The pack
 | TypeScript | `index.js` (webpack bundle) | n/a — uses the player's built-in Node.js runtime | `node ./index.js` |
 | Go | static binary | `GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build` | `./hello_world_go` |
 | C++ | dynamically linked binary | Docker container with BrightSign SDK cross-compiler | `LD_LIBRARY_PATH=./lib ./time_publisher` |
-| Java | fat JAR | n/a — JVM-portable bytecode | `java -jar hello-extension.jar` |
+| Java | fat JAR | n/a — JVM-portable bytecode | `./jre/bin/java -jar hello-extension.jar` |
 
-> **Note:** Java requires a JVM present on the player at runtime. Verify with your facilitator whether the target player model has a JVM pre-installed. If not, a bundled JRE can be placed inside `install/` and referenced by a relative path in `bsext_init`, but this significantly increases extension size and is unusual in practice.
+> **Note:** BrightSign players do not have a system Java installation. The Java example
+> bundles Eclipse Temurin 11 JRE for `linux/aarch64` inside the squashfs image. The
+> `bsext_init` script references `./jre/bin/java` — a path relative to the extension's
+> mount point. The `make download-jre` target handles the JRE download automatically.
 
 ---
 
