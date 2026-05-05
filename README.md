@@ -1,40 +1,76 @@
-# BrightSign Extension Workshop
+# extension-template
 
-A hands-on workshop that takes development teams from a blank workstation to a working
-BrightSign extension running on a live player — in roughly half a day.
+A scaffold for building, packaging, and deploying BrightSign extensions. Clone or use this as a template for any extension — Java, Go, TypeScript, C++, or anything else that produces a runnable binary.
 
-This workshop covers **basic extension development**: building, packaging, deploying, and
-iterating on a BrightSign extension using the standard extension template. It does not
-cover BrightSign Model Package (BMP) development for the NPU — that is a more advanced
-topic requiring separate tooling and is out of scope here.
+## What's Here
 
-> **Note:** Compiling BrightSign AI/ML models for the NPU requires an **x86 host machine**.
-> The model compilation tools do not run on ARM-based systems — including Apple Silicon
-> MacBooks (M1/M2/M3) and ARM Linux machines — even inside a container. If your work
-> involves NPU model compilation, you will need a native x86 Linux machine for that step.
-> Windows is not supported.
-
-**[Start here → Module 0: Introduction](https://github.com/BrightDevelopers/bs-workshop-extension/blob/fixit/workshop/00-introduction/README.md)**
-
----
-
-## Companion Repos
-
-| Repo | Purpose |
+| Path | Purpose |
 |---|---|
-| [bs-extension-workshop-html-app](https://github.com/BrightSign-Playground/bs-extension-workshop-html-app) | HTML app deployed in Module 9 |
-| [extension-template](https://github.com/brightsign/extension-template) | The packaging scaffold every extension uses |
-| [brightsign-npu-gaze-extension](https://github.com/brightsign/brightsign-npu-gaze-extension) | Production example of a real extension |
+| `examples/hello_world-java-extension/` | Complete Java example: HTTP server, uptime endpoint, bundled JRE |
+| `examples/common-scripts/` | Packaging scripts — produce the squashfs + LVM install artifact every extension needs |
 
----
+## Quick Start (Java)
 
-## Running the Workshop
+Run from the repository root:
 
-If you are a BrightSign facilitator, see the [Facilitator Guide](facilitator-guide/README.md)
-for pre-workshop setup, a timing table, common failure modes and fixes, and suggestions
-for fast finishers.
+```
+cp -r examples/hello_world-java-extension/. .
+make build          # compile fat JAR
+make test-local     # smoke test: start → curl → stop
+make package        # squashfs ZIP ready to deploy to the player
+```
 
----
+## Learn This Template
+
+The **BrightSign Extension Workshop** teaches the full build → package → deploy → verify → iterate cycle using this template:
+
+**https://github.com/BrightDevelopers/bs-workshop-extension**
+
+## Dev Container
+
+A pre-built container with all required tools (JDK, Maven, Go, Node, squashfs-tools) is
+maintained in the workshop repo. Pull or update it with:
+
+```
+make pull-container
+```
+
+Or directly:
+
+```
+docker pull ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+To use it, run from inside your cloned repo directory:
+
+**Docker (macOS / Linux):**
+```
+docker run -it --rm \
+    -v "$(pwd):/workspace" \
+    -e HOST_UID=$(id -u) \
+    -e HOST_GID=$(id -g) \
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+**Podman (rootless):**
+```
+podman run -it --rm \
+    -v "$(pwd):/workspace" \
+    --userns=keep-id \
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+**Windows (PowerShell — Docker):**
+```powershell
+docker run -it --rm `
+    -v "${PWD}:/workspace" `
+    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
+```
+
+## See Also
+
+- [BrightSign Extension Workshop](https://github.com/BrightDevelopers/bs-workshop-extension) — workshop teaching this template end-to-end, including the dev container Dockerfile
+- [brightsign-npu-gaze-extension](https://github.com/brightsign/brightsign-npu-gaze-extension) — production extension built on this template
 
 ## License
 

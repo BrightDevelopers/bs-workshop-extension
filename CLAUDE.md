@@ -1,93 +1,62 @@
-# BrightSign Extension Workshop — Project CLAUDE.md
+# extension-template — Project CLAUDE.md
 
 ## What This Project Is
 
-A hands-on, instructor-led workshop (AWS catalog style) that teaches development teams how
-to build, package, deploy, and iterate on BrightSign player extensions using the
-[extension-template](https://github.com/brightsign/extension-template).
+A scaffold for building, packaging, and deploying BrightSign player extensions. Teams
+clone or fork this repo as the starting point for any extension — Java, Go, C++, or
+anything else that produces a runnable binary.
 
-**Primary goal:** Reduce extension development time from days to hours by showing teams
-the complete, repeatable workflow — from blank repo to running extension on a live player.
-The "Hello BrightSign" example program is a teaching vehicle, not the point. The point
-is the template, the workflow, and the packaging and deployment pipeline that teams take
-home and apply to whatever they are actually building.
+The "Hello BrightSign" Java example is intentionally minimal: it demonstrates the three
+primitives every real extension uses (network, filesystem, lifecycle) without any
+application-specific complexity.
 
-**Current milestone:** Working Java workshop deliverable in one week.
-**Planned future variants:** Go, C++ (swap Module 4 only; everything else is shared).
-
-This repo covers the **extension half** of the system. A companion HTML repo (separate
-repo, same workshop) covers the BrightSign HTML app that runs on the player and consumes
-the extension. See "Companion HTML App" section below.
+**Workshop:** The full build → package → deploy → verify → iterate workflow is taught in:
+https://github.com/BrightDevelopers/bs-workshop-extension
 
 ---
 
 ## Key Reference Repositories
 
-- **Extension template:** https://github.com/brightsign/extension-template — the scaffold
-  every participant clones. The workshop teaches this template, not a custom project.
+- **Extension template (this repo):** https://github.com/brightsign/extension-template
 - **NPU gaze extension:** https://github.com/brightsign/brightsign-npu-gaze-extension —
-  a production-grade extension using the same template. Use it to show what the template
-  scales to; never reference its domain-specific complexity (NPU, camera, gaze).
-- **Simple gaze HTML app:** https://github.com/brightsign/simple-gaze-detection-html —
-  the structural model for the companion HTML repo (BrightScript bootstrap, webpack
-  bundle, Makefile pattern, SD card deploy pipeline).
+  production-grade extension using the same template structure
+- **Companion HTML app:** https://github.com/BrightDevelopers/bs-extension-workshop-html-app —
+  BrightSign HTML application that consumes the extension over HTTP
 
 ---
 
-## Prerequisites and Development Environment
+## Target Extension: "Hello BrightSign"
 
-### Workshop Participant Prerequisites
+The `examples/hello_world-java-extension/` example satisfies this contract:
 
-| Category | Requirement |
-|---|---|
-| Hardware | BrightSign player (LS424, XD1034, or later with extension support) |
-| Hardware | Development workstation: macOS, Windows, or Linux |
-| Hardware | Ethernet cable + power for the player |
-| Hardware | SD card (for Module 9 HTML app deployment) |
-| Network | Travel router (GL.iNet or equivalent) bridging venue WiFi to local LAN; players on Ethernet switch; workstations on router WiFi |
-| Skills | Comfort with a terminal / command line |
-| Skills | Basic familiarity with the workshop language (Java for the Java variant, etc.) |
+- HTTP server on port 8080
+- `GET /` → `{ "message": "Hello from BrightSign!", "uptime_seconds": N }` with `Content-Type: application/json`
+- Writes one line to `/tmp/hello-extension.log` on startup
+- Handles SIGTERM and SIGINT; exits cleanly
+- `bsext_init` script with matching `DAEMON_NAME`
 
-Participants do NOT need to install any tools on their workstations if they use the
-development container (see below). The container is the recommended path for
-instructor-led workshops because it eliminates tool version conflicts and OS differences.
+Any extension that replaces this one must satisfy the same contract for the packaging
+and deployment pipeline to work unchanged.
 
-### Development Container (Recommended)
+---
 
-A pre-built container image is published to the GitHub Container Registry at:
+## Development Environment
+
+### Dev Container (Recommended)
+
 ```
 ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
-The container includes all tools needed for the full workshop:
-- JDK 11 + Maven 3.6
-- Go 1.21 (for future Go module)
-- Node 20.x + npm (for HTML app module)
-- Git, curl, unzip, jq, ssh, scp
-- squashfs-tools (mksquashfs — required for Module 5 packaging)
-- wget, python3 (for JSON pretty-printing in curl exercises)
+Includes: JDK 11 + Maven, Go, Node 20, squashfs-tools, Git, curl, ssh/scp.
+The Dockerfile is maintained in the workshop repo: https://github.com/BrightDevelopers/bs-workshop-extension
 
-The Dockerfile for this image lives at `docker/Dockerfile` in this repo. It is compatible
-with both Docker and Podman — substitute `podman` for `docker` in any command below.
-
-#### Correct workflow: clone first, then run the container
-
-The container mounts the workshop repo from the host, so work persists after the container
-exits. Clone and enter the repo **before** starting the container:
-
+Pull or update the image:
 ```
-$ git clone https://github.com/BrightDevelopers/bs-workshop-extension
-$ cd bs-workshop-extension
+make pull-container
 ```
 
-Then start the container from inside that directory. The current working directory is
-mounted as `/workspace` inside the container.
-
-#### Running the Container on macOS / Linux
-
-Prerequisites: Docker Desktop for Mac (or OrbStack), Docker Engine, or Podman.
-
-Docker:
+**macOS / Linux — Docker:**
 ```
 docker run -it --rm \
     -v "$(pwd):/workspace" \
@@ -96,7 +65,7 @@ docker run -it --rm \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
-Podman (rootless):
+**macOS / Linux — Podman (rootless):**
 ```
 podman run -it --rm \
     -v "$(pwd):/workspace" \
@@ -104,259 +73,30 @@ podman run -it --rm \
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
-- `-v "$(pwd):/workspace"` mounts the cloned repo so work persists after the container exits.
-- Docker uses `HOST_UID`/`HOST_GID` so the entrypoint remaps the internal user to match the host user.
-- Rootless Podman uses `--userns=keep-id` to map the host UID directly into the container without remapping.
-- All workshop commands are run inside this container shell at `/workspace`.
-- The Module 4 smoke test (`curl localhost:8080`) runs inside the container and does not
-  require a host port mapping. Add `-p 8080:8080` (or `-p 18080:8080` if 8080 is taken)
-  only if you need to reach port 8080 from your host browser.
-
-> **Note for Apple Silicon (M1/M2/M3):** The container is built for `linux/amd64`. Docker
-> Desktop runs it under Rosetta 2 emulation automatically. Add `--platform linux/amd64`
-> explicitly if you see a platform warning.
-
-#### Running the Container on Windows
-
-Prerequisites: Docker Desktop for Windows with WSL2 backend enabled, or Podman Desktop.
-
-Open a PowerShell or Windows Terminal prompt, clone the repo, enter it, then:
-
-Docker:
+**Windows (PowerShell) — Docker:**
 ```powershell
 docker run -it --rm `
     -v "${PWD}:/workspace" `
     ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
 ```
 
-Podman:
-```powershell
-podman run -it --rm `
-    -v "${PWD}:/workspace" `
-    ghcr.io/brightdevelopers/bs-extension-workshop-devenv:latest
-```
+The container mounts the repo as `/workspace`. Run all build commands there.
+Add `-p 8080:8080` only if you need to reach the local smoke test from a host browser.
 
-- Use backtick `` ` `` for line continuation in PowerShell.
-- `${PWD}` expands to the current directory — run this from inside the cloned repo.
-- scp/ssh to the player work from inside the container — no Windows SSH client needed.
-- `HOST_UID`/`HOST_GID` are not needed on Windows — Docker Desktop's WSL2 integration handles file ownership automatically.
+> **Note for Apple Silicon:** The container is `linux/amd64`. Add `--platform linux/amd64`
+> if you see a platform warning.
 
-> **Warning:** Use PowerShell or Windows Terminal — not `cmd.exe`. `${PWD}` does not
-> expand in `cmd.exe`.
+### Manual Install (Fallback)
 
-> **Note:** If Docker Desktop is not available, participants can use WSL2 directly with
-> Ubuntu and install tools manually (see Manual Install fallback in the facilitator guide).
-
-### Manual Tool Install (Fallback — No Container)
-
-If the container is unavailable, participants can install tools directly. Minimum set:
-
-| Tool | Version | Install |
+| Tool | Version | Notes |
 |---|---|---|
 | JDK | 11+ | https://adoptium.net |
 | Maven | 3.6+ | https://maven.apache.org |
-| Node.js | 20.x | https://nodejs.org (select 20.x LTS) |
-| Git | any recent | OS package manager |
-| curl | any | OS package manager |
-| unzip | any | OS package manager |
-| squashfs-tools | any | `sudo apt install squashfs-tools` (Linux only) |
+| squashfs-tools | any | `sudo apt install squashfs-tools` — Linux only; required for packaging |
+| Git, curl, unzip | any | OS package manager |
 
-> **Warning:** squashfs-tools is Linux-only. On macOS/Windows without the container,
-> Module 5 packaging must be done inside the container or a Linux VM. This is the primary
-> reason the container is strongly preferred.
-
----
-
-## Workshop Philosophy
-
-- **The example program is a teaching prop, not the deliverable.** "Hello BrightSign" is
-  intentionally trivial. What participants take home is the template workflow: any team
-  can slot their own binary — Java, Go, C++, Rust, anything — into the same packaging
-  and deployment pipeline without understanding the internals of the template.
-- **The binary section is the only swappable part.** Module 4 (Build the Extension
-  Binary) is language-specific. Every other module is shared, identical across languages.
-  This is the core structural decision. Do not leak language-specific content elsewhere.
-- **Two repos, one workshop.** The extension repo and the HTML app repo are developed
-  and deployed independently, but taught together. Teams leave knowing how to build both
-  halves of a real extension-driven application.
-- **AWS workshop conventions.** Number every participant action step. Use callout blocks
-  (Note / Warning / Tip). Every module has a stated learning objective. Participants type
-  real commands and see real output.
-- **Instructor-led with self-paced fallback.** Every step is complete enough to follow
-  alone. Add facilitator guidance in `<!-- instructor: ... -->` HTML comments for things
-  that benefit from live demonstration.
-
----
-
-## Target Extension: "Hello BrightSign"
-
-A deliberately minimal extension that exercises the full lifecycle:
-
-- Starts an HTTP server on port 8080.
-- `GET /` → returns JSON: `{ "message": "Hello from BrightSign!", "uptime_seconds": N }`.
-- Writes one line to `/tmp/hello-extension.log` on startup.
-- Runs until shutdown signal; exits cleanly.
-
-This covers the three primitives every real extension uses: network, filesystem,
-lifecycle. Nothing else. The moment participants try to add features, they are ahead of
-the workshop — which is the right problem to have.
-
----
-
-## Companion HTML App (Separate Repo)
-
-A standalone BrightSign HTML application that runs on the same player and interacts with
-the extension. It lives in its own repository:
-
-**https://github.com/BrightDevelopers/bs-extension-workshop-html-app**
-
-This repo contains no reference to it beyond this CLAUDE.md and the Module 9 README.
-Participants clone it independently during Module 9.
-
-### Structural model: simple-gaze-detection-html
-
-Follow the structure and conventions from
-https://github.com/brightsign/simple-gaze-detection-html exactly:
-
-| Pattern | How we apply it |
-|---|---|
-| `src/autorun.brs` — BrightScript bootstrap | Same: load HTML widget, enable SSH/inspector |
-| `src/index.html` — HTML template | Same: minimal markup, load `bundle.js` |
-| `src/index.js` — application logic | Fetch from extension HTTP endpoint instead of polling `/tmp/` |
-| Webpack + Babel bundle | Same toolchain |
-| `make prep / build / publish / clean` | Same Makefile targets |
-| Deploy to `sd/` → SD card | Same deployment path |
-
-### Interaction contract between extension and HTML app
-
-The extension exposes one endpoint that the HTML app calls:
-
-```
-GET http://localhost:8080/
-→ { "message": "Hello from BrightSign!", "uptime_seconds": N }
-```
-
-The HTML app polls this endpoint once per second, renders the message and uptime on
-screen. This demonstrates the full communication path:
-extension process (port 8080) ↔ BrightSign JS runtime ↔ HTML UI.
-
-### HTML app layout
-
-```
-bs-extension-workshop-html-app/   ← separate repo
-├── src/
-│   ├── autorun.brs               # BrightScript bootstrap
-│   ├── index.html                # UI template
-│   └── index.js                  # fetch loop, DOM update
-├── webpack.config.js
-├── package.json
-├── Makefile                      # prep / build / publish / clean
-└── README.md
-```
-
-Webpack config targets `node` (BrightSign JS runtime), externalizes `@brightsign/*`
-packages. Node 14.x. Same as simple-gaze-detection-html.
-
----
-
-## Workshop Modules (Canonical Structure)
-
-Target duration: **3.5 hours** including short breaks. This is a half-day session.
-
-### Module 0 — Introduction (15 min)
-Learning objective: Understand what BrightSign extensions are and why teams build them.
-- What is a BrightSign extension? Where does it run? What problem does it solve?
-- System architecture diagram: player OS ↔ extension (port 8080) ↔ HTML app (port 2999).
-- Demo the finished product: facilitator shows JSON response from `curl` and the HTML
-  app rendering it live on the player display.
-- What the template gives you: packaging, manifest, deploy pipeline — ready to use.
-- What we will build today (and what we will NOT build — scope is intentionally small).
-
-### Module 1 — Environment Setup (30 min)
-Learning objective: Verify all tools are present and the player is reachable.
-- Workstation: JDK 11+, Maven 3.6+, Node 14, Git, curl, unzip.
-- Player: power on, find IP, enable dev mode (Local Extensions + Insecure Content Loading).
-- Verify connectivity: `ping <player_ip>`, `curl http://<player_ip>:8008`.
-- Clone the extension template: `git clone https://github.com/brightsign/extension-template`.
-
-### Module 2 — Understand the Template (20 min)
-Learning objective: Know what every file in the extension template does and why.
-- Walk every file in the cloned template.
-- `manifest.json` deep-dive: every field, what breaks if wrong.
-- How the player finds, installs, starts, and stops an extension.
-- Show npu-gaze-extension: same template, bigger program. Same workflow scales.
-
-### Module 3 — Understand the Player API (15 min)
-Learning objective: Control extensions via the BrightSign REST API.
-- Port 8008 is the player control plane. Port 8080 is the extension's own data plane.
-- Live `curl` demos: list extensions, start, stop, get logs.
-- These same `curl` commands work for any extension — this API does not change.
-
-### Module 4 — Build the Extension Binary [MODULAR — SWAP PER LANGUAGE] (45 min)
-Learning objective: Produce a binary that satisfies the extension contract.
-
-All language variants live in `workshop/04-build/` with per-language subdirectories.
-Swap this module for the customer's language. The output contract is always the same:
-one binary (or JAR) plus any supporting files, which Module 5 packages.
-
-#### 04-build/java/
-- Create Maven project. Implement `HelloExtension.java`: embedded HTTP server
-  (`com.sun.net.httpserver`), uptime counter, startup log write.
-- `mvn clean package` → fat JAR with all dependencies.
-- Local smoke test: `java -jar target/hello-extension.jar` → `curl localhost:8080`.
-
-#### 04-build/go/ (future)
-- `go mod init`, `net/http`, cross-compile for BrightSign ARM target.
-- Same local smoke test.
-
-#### 04-build/cpp/ (future)
-- CMake + cpp-httplib, cross-compile toolchain.
-- Same local smoke test.
-
-### Module 5 — Package the Extension (15 min)
-Learning objective: Produce a valid extension ZIP from any binary.
-- Create ZIP: `manifest.json` at root, JAR/binary alongside it.
-- Validate ZIP structure before upload (common failure modes: wrong `mainClass` path,
-  missing dependencies, JAR not self-contained).
-- This step is language-agnostic. The packaging workflow is identical for every variant.
-
-### Module 6 — Deploy to the Player (20 min)
-Learning objective: Install and start the extension on a live player.
-- Upload ZIP via player web UI — walk every click with screenshots.
-- Alternatively: `curl` upload for command-line preference.
-- Install, start, confirm status shows "Running".
-
-### Module 7 — Verify It Works (15 min)
-Learning objective: Confirm end-to-end behavior from two angles.
-- `curl http://<player_ip>:8080/` — see JSON response.
-- View extension logs via player web UI.
-- (Optional) SSH into player, `cat /tmp/hello-extension.log`.
-
-### Module 8 — Iterate: Change and Redeploy (20 min)
-Learning objective: Execute the full change → rebuild → redeploy cycle.
-- Modify message string. Stop → rebuild → repackage → upload → install → start.
-- This is the workflow teams will run daily. Muscle memory matters.
-
-### Module 9 — The HTML App (30 min)
-Learning objective: Build and deploy the HTML app that consumes the extension.
-- Clone https://github.com/BrightDevelopers/bs-extension-workshop-html-app
-- `make prep && make build && make publish`.
-- Walk `src/autorun.brs`, `src/index.html`, `src/index.js` — same pattern as
-  simple-gaze-detection-html.
-- Deploy `sd/` contents to SD card. Insert, boot, watch the UI pull from the extension.
-- Discussion: what teams can build in this HTML layer — dashboards, kiosks, anything.
-
-### Module 10 — Production Hardening Overview (15 min)
-Learning objective: Know what changes before shipping.
-- Extension signing: why, tools, process — conceptual, no hands-on keys.
-- Secure mode vs. dev mode: what is disabled, what is required.
-- What to never ship (debug logging, hardcoded credentials, unsigned code).
-- Pointer to BrightSign signing documentation.
-
-### Cleanup
-- Stop and uninstall the extension.
-- Restore player dev mode settings if needed.
-- Pointer to BrightSign developer portal, extension-template, community.
+squashfs-tools is Linux-only. On macOS/Windows without the container, the packaging
+step must run inside the container or a Linux VM.
 
 ---
 
@@ -365,114 +105,66 @@ Learning objective: Know what changes before shipping.
 ```
 /
 ├── CLAUDE.md                          ← this file
-├── docs/
-│   ├── PRD.md                         ← original PRD (do not delete)
-│   └── DESIGN.md                      ← master design doc (create before building)
-├── docker/
-│   └── Dockerfile                     ← workshop dev container (published to GHCR)
-├── workshop/
-│   ├── 00-introduction/
-│   │   └── README.md
-│   ├── 01-environment-setup/
-│   │   └── README.md
-│   ├── 02-understand-template/
-│   │   └── README.md
-│   ├── 03-player-api/
-│   │   └── README.md
-│   ├── 04-build/                      ← language-specific module
-│   │   ├── README.md                  ← Java (full), Go + C++ (stubs)
-│   │   └── java/
-│   │       └── hello-extension/       ← Maven project + bsext_init
-│   ├── 05-package/
-│   │   └── README.md
-│   ├── 06-deploy/
-│   │   └── README.md
-│   ├── 07-verify/
-│   │   └── README.md
-│   ├── 08-iterate/
-│   │   └── README.md
-│   ├── 09-html-app/
-│   │   └── README.md
-│   ├── 10-production/
-│   │   └── README.md
-│   └── cleanup/
-│       └── README.md
-├── facilitator-guide/
-│   └── README.md                      ← timing, demo prep, FAQ, common failures
-└── Makefile
+├── Makefile                           ← pull-container target
+└── examples/
+    ├── common-scripts/
+    │   ├── pkg-dev.sh                 ← packaging orchestrator
+    │   ├── make-extension-lvm         ← squashfs + LVM install script generator (eMMC)
+    │   └── make-extension-ubi         ← squashfs + UBI install script generator (NAND)
+    └── hello_world-java-extension/
+        ├── Makefile                   ← build / download-jre / test-local / package / clean
+        ├── bsext_init                 ← SysV init script; player OS uses this to start/stop
+        ├── pom.xml                    ← Maven config; maven-shade-plugin for fat JAR
+        └── src/main/java/com/brightsign/workshop/
+            └── HelloExtension.java    ← HTTP server, uptime counter, startup log
 ```
 
 ---
 
-## Writing Style Rules for Workshop Content
+## Makefile Targets (hello_world-java-extension)
 
-- **Numbered action steps.** Every participant action is a numbered list item beginning
-  with a verb: "1. Open a terminal." "2. Run the following command:"
-- **Commands in fenced code blocks** with shell prompt: `$ mvn clean package`.
-- **Expected output** shown immediately after every command that produces output.
-- **Callout blocks** (blockquote format):
-  - `> **Note:** ...` — helpful context that does not block progress.
-  - `> **Warning:** ...` — common mistake, destructive action, or known gotcha.
-  - `> **Tip:** ...` — optional shortcut or exploration for fast finishers.
-- **Module header format:** Duration · Learning Objectives · Prerequisites.
-- No filler. No praise. No "In this section we will...". Start with the first action.
+Run from the **repository root** — the Makefile references `examples/common-scripts/`.
 
----
-
-## Makefile Targets (Minimum, Both Repos)
-
-Extension repo:
-```
-build        # build the hello-extension JAR/binary
-package      # produce the deployable ZIP
-test-local   # run locally and curl-verify
-clean        # remove build artifacts
-help         # list targets (default)
-```
-
-HTML app repo (mirrors simple-gaze-detection-html):
-```
-prep         # npm install
-build        # webpack bundle
-publish      # copy dist/ + autorun.brs to sd/
-clean        # remove build artifacts
-help         # list targets (default)
-```
+| Target | Action |
+|---|---|
+| `make build` | `mvn clean package` → fat JAR |
+| `make download-jre` | Download Temurin 11 JRE for `linux/aarch64` into `install/jre/` |
+| `make test-local` | Start extension, curl-verify endpoint, stop |
+| `make package` | Build + download JRE + produce deployable squashfs ZIP |
+| `make clean` | Remove `target/`, `install/`, generated ZIPs |
 
 ---
 
-## What NOT to Do
+## Packaging Pipeline
 
-- Do not make the example extension clever. Simplicity is the feature.
-- Do not skip the local smoke test in Module 4. Participants must see the binary work
-  before touching the player.
-- Do not put language-specific content outside `04-build-<language>/`. Every other
-  module must be identical across all language variants.
-- Do not reference npu-gaze-extension domain complexity (NPU, camera, gaze) as
-  something participants should understand. It is a packaging structure reference only.
-- Do not write a full-day workshop. 3.5 hours with breaks. Half day.
-- Do not invent a custom HTML app structure. Follow simple-gaze-detection-html exactly
-  — same Makefile targets, same file layout, same webpack config shape.
+```
+mvn clean package
+    → target/hello-extension-1.0.0.jar
+
+make download-jre
+    → install/jre/   (Eclipse Temurin 11 for linux/aarch64)
+
+examples/common-scripts/pkg-dev.sh install lvm hello_extension
+    → ext_hello_extension.squashfs        (read-only filesystem image)
+    → ext_hello_extension_install-lvm.sh  (SHA256-verified LVM installer)
+    → hello_extension-YYYYMMDD-HHMMSS.zip (transfer artifact)
+```
+
+The ZIP is transferred to the player via scp, then the install script creates an LVM
+logical volume and writes the squashfs image. The player mounts it read-only at
+`/var/volatile/bsext/hello_extension/` on next boot.
 
 ---
 
-## Current Status
+## bsext_init Key Fields
 
-- [x] Module 0: Introduction
-- [x] Module 1: Environment Setup
-- [x] Module 2: Understand Template
-- [x] Module 3: Player API
-- [x] Module 4 (Java): Build Extension + Maven project
-- [x] Module 5: Package
-- [x] Module 6: Deploy
-- [x] Module 7: Verify
-- [x] Module 8: Iterate
-- [x] Module 9: HTML App (module README written; html-app submodule registered)
-- [x] Module 10: Production
-- [x] Facilitator Guide
-- [x] Makefile (extension repo)
-- [x] docker/Dockerfile — dev container for GHCR
-- [ ] .github/workflows/docker-publish.yml — not yet created
-- [ ] Module 1 README update — add container launch instructions (macOS + Windows)
-- [x] HTML app — lives at https://github.com/BrightDevelopers/bs-extension-workshop-html-app (separate repo, no submodule)
-- [x] Java bsext_init — bundles Eclipse Temurin 11 JRE for linux/aarch64; no system Java required on player
+```sh
+DAEMON_NAME="hello_extension"           # 3–31 chars, lowercase + underscore, start with letter
+EXTENSION_DIR="/var/volatile/bsext/${DAEMON_NAME}"
+JAVA_BIN="${EXTENSION_DIR}/jre/bin/java"
+JAR_PATH="${EXTENSION_DIR}/hello-extension-1.0.0.jar"
+```
+
+`DAEMON_NAME` must match the name argument passed to `pkg-dev.sh`. The `exec` in
+`run_extension()` replaces the shell with the JVM so SIGTERM goes directly to the JVM
+and triggers shutdown hooks.
