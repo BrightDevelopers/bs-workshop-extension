@@ -5,7 +5,10 @@ JAR_NAME       := hello-extension-1.0.0.jar
 JAR_PATH       := target/$(JAR_NAME)
 INSTALL_DIR    := install
 JRE_DIR        := $(INSTALL_DIR)/jre
+<<<<<<< Updated upstream:examples/hello_world-java-extension/Makefile
 # Must be run from the repository root — examples/common-scripts/ is at the repo root level.
+=======
+>>>>>>> Stashed changes:workshop/04-build/java/hello-extension/Makefile
 COMMON_SCRIPTS := examples/common-scripts
 
 # Eclipse Temurin 11 JRE for BrightSign (ARM64 Linux).

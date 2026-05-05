@@ -40,10 +40,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     usbutils \
     wget \
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     xxd \
     zip \
     zoxide \
     zstd \
+=======
+    zip \
+>>>>>>> Stashed changes
 =======
     zip \
 >>>>>>> Stashed changes
