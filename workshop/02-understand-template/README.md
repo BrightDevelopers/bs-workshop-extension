@@ -151,6 +151,7 @@ Read `main.go`. It does three things:
 Cross-compile the binary for BrightSign's ARM64 processor:
 
 ```
+cd examples/hello_world-go-extension/
 GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o hello_world_go main.go
 ```
 
@@ -173,7 +174,7 @@ hello_world_go-1747123456.zip
 
 > **Note:** The timestamp in the ZIP filename is a Unix epoch value from `date +%s`, not a human-readable date.
 
-That ZIP file is your deployable extension artifact. Upload it to the player via the Control API.
+That ZIP file is your deployable extension artifact.
 
 ---
 
