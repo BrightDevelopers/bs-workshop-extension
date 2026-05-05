@@ -167,4 +167,7 @@ flowchart TD
 
 ---
 
-**Workshop complete.** If you are continuing to the production module, see [Module 10 — Production Considerations](../10-production/README.md).
+**Workshop complete.** 
+
+-If you are continuing to the production module, see [Module 10 — Production Considerations](../10-production/README.md).
+- If you are implementing a frontend, see [Module 9 - HTML App](../09-html-app/)
