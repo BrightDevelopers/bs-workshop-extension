@@ -68,6 +68,6 @@ Run through this checklist before deploying any extension to a production player
 ## 10.4 Where to Go Next
 
 - [BrightSign Developer Documentation](https://brightsign.atlassian.net/wiki/spaces/DOC/overview) — official reference for the player API, manifest fields, and signing
-- [extension-template](https://github.com/brightsign/extension-template) — the starter repo used in this workshop; keep it as your baseline for new extensions
+- [extension-template](https://github.com/BrightDevelopers/extension-template) — the starter repo used in this workshop; keep it as your baseline for new extensions
 - [brightsign-npu-gaze-extension](https://github.com/brightsign/brightsign-npu-gaze-extension) — a more complex real-world example using hardware inference and an HTML frontend
 - BrightSign Developer Community — ask your facilitator for the current forum or Slack channel link

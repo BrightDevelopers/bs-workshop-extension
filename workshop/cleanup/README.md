@@ -6,29 +6,27 @@
 
 ## Stop and Remove the Extension
 
-1. Stop the extension:
+1. SSH into the player and stop the extension:
 
    ```bash
-   curl -X POST http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/stop
+   ssh brightsign@$PLAYER_IP
+   # /var/volatile/bsext/hello_extension/bsext_init stop
    ```
 
-2. Uninstall the extension:
+2. Unmount and remove the LVM volume:
 
    ```bash
-   curl -X DELETE http://$PLAYER_IP:8008/api/v1/extensions/hello-extension
+   # umount /var/volatile/bsext/ext_hello_extension 2>/dev/null; rmdir /var/volatile/bsext/ext_hello_extension 2>/dev/null
+   # lvremove --yes /dev/mapper/bsos-ext_hello_extension
    ```
 
-3. Verify the extension is gone:
+3. Verify the extension volume is gone:
 
    ```bash
-   curl -s http://$PLAYER_IP:8008/api/v1/extensions
+   # ls /var/volatile/bsext/
    ```
 
-   Expected response:
-
-   ```json
-   []
-   ```
+   Expected: `hello_extension` no longer appears in the listing.
 
 ---
 

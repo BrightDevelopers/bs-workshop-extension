@@ -69,7 +69,7 @@ ls -lh hello_extension-*.zip
 SSH into the player:
 
 ```
-ssh admin@$PLAYER_IP
+ssh brightsign@$PLAYER_IP
 ```
 
 Stop the extension process:
@@ -78,15 +78,16 @@ Stop the extension process:
 # /var/volatile/bsext/hello_extension/bsext_init stop
 ```
 
-Remove the LVM volume:
+Unmount and remove the LVM volume manually:
 
 ```
-# /usr/local/ext_hello_extension_install-lvm.sh uninstall
+# umount /var/volatile/bsext/ext_hello_extension 2>/dev/null; rmdir /var/volatile/bsext/ext_hello_extension 2>/dev/null
+# lvremove --yes /dev/mapper/bsos-ext_hello_extension
 ```
 
-Expected: the install script confirms the volume was removed. You can now log out or leave the session open for the next step.
+Expected: `lvremove` confirms the logical volume was removed. You can now log out or leave the session open for the next step.
 
-> **Note:** The install script accepts an `uninstall` argument that reverses the installation: it unmounts the squashfs volume and removes the LVM logical volume. The `bsext_init stop` call before uninstall is required because the volume cannot be removed while it is mounted.
+> **Note:** The install script has no `uninstall` argument — it only installs. Removal requires stopping the extension, unmounting the squashfs volume, and removing the LVM logical volume manually as shown above. The `bsext_init stop` call before removal is required because the volume cannot be removed while it is mounted.
 
 ---
 
@@ -95,7 +96,7 @@ Expected: the install script confirms the volume was removed. You can now log ou
 From your workstation, transfer the new ZIP:
 
 ```
-scp hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
+scp hello_extension-*.zip brightsign@$PLAYER_IP:/usr/local/
 ```
 
 On the player, unzip and install:

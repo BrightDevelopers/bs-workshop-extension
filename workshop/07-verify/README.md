@@ -37,7 +37,7 @@ If you see this response, the extension is running and reachable from the networ
 ## 7.2 Read the Startup Log
 
 ```
-ssh admin@$PLAYER_IP "cat /tmp/hello-extension.log"
+ssh brightsign@$PLAYER_IP "cat /tmp/hello-extension.log"
 ```
 
 Expected: one line containing an ISO 8601 timestamp from when the extension process started.
@@ -53,25 +53,25 @@ If the extension is not responding to HTTP requests, work through these steps in
 **Step 1.** Check whether the process is running:
 
 ```
-ssh admin@$PLAYER_IP "ps aux | grep java"
+ssh brightsign@$PLAYER_IP "ps aux | grep java"
 ```
 
 **Step 2.** Check the syslog for messages from the init script:
 
 ```
-ssh admin@$PLAYER_IP "logread | grep hello_extension"
+ssh brightsign@$PLAYER_IP "logread | grep hello_extension"
 ```
 
 **Step 3.** Check whether another process has claimed port 8080:
 
 ```
-ssh admin@$PLAYER_IP "netstat -tlnp | grep 8080"
+ssh brightsign@$PLAYER_IP "netstat -tlnp | grep 8080"
 ```
 
 **Step 4.** Run the extension in the foreground to see its output directly:
 
 ```
-ssh admin@$PLAYER_IP
+ssh brightsign@$PLAYER_IP
 # /var/volatile/bsext/hello_extension/bsext_init run
 ```
 

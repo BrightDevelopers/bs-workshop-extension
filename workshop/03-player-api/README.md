@@ -42,10 +42,10 @@ Port 22 is how you get in and move files. Port 8080 is how you talk to your exte
 1. From your workstation, open an SSH session to the player:
 
    ```
-   $ ssh admin@$PLAYER_IP
+   $ ssh brightsign@$PLAYER_IP
    ```
 
-   Enter the password when prompted. The default password is printed on the player's front display or shown on the facilitator's slide.
+   No password is required — the player was configured with `SetLoginPassword("none")` during setup.
 
    Expected prompt:
 
@@ -70,7 +70,7 @@ Port 22 is how you get in and move files. Port 8080 is how you talk to your exte
 The extension package is a ZIP file produced by the packaging step (Module 5). Transfer it to `/usr/local/` on the player using `scp`:
 
 ```
-$ scp hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
+$ scp hello_extension-*.zip brightsign@$PLAYER_IP:/usr/local/
 ```
 
 Expected: a progress line that completes without error.
@@ -88,7 +88,7 @@ hello_extension-20260321-143022.zip    100%   58MB   4.2MB/s   00:13
 1. SSH into the player:
 
    ```
-   $ ssh admin@$PLAYER_IP
+   $ ssh brightsign@$PLAYER_IP
    ```
 
 2. Change to `/usr/local/`, list the ZIP to confirm the transfer, unzip it, and run the install script:

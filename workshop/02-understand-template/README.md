@@ -15,40 +15,45 @@
 
 ## 2.1 Template Structure
 
-From inside the cloned `extension-template` directory, list every file:
+The template is organized as follows. Each example in `examples/` is self-contained; the only shared code is the packaging scripts in `examples/common-scripts/`.
 
 ```
-find . -type f | sort
+extension-template/
+├── README.md
+├── LICENSE.txt
+├── docs/
+│   ├── Serial-Connection.md
+│   └── Un-Secure-Player.md
+├── examples/
+│   ├── common-scripts/          ← shared packaging scripts (all languages use these)
+│   │   ├── make-extension-lvm
+│   │   ├── make-extension-ubi
+│   │   └── pkg-dev.sh
+│   ├── hello_world-java-extension/   ← Java: HTTP server, bundled JRE
+│   │   ├── bsext_init
+│   │   ├── Makefile
+│   │   ├── pom.xml
+│   │   └── src/main/java/com/brightsign/workshop/HelloExtension.java
+│   ├── hello_world-go-extension/     ← Go: statically compiled, no SDK needed
+│   │   ├── bsext_init
+│   │   ├── go.mod
+│   │   └── main.go
+│   ├── hello_world-ts-extension/     ← TypeScript: uses player's Node.js runtime
+│   │   ├── bsext_init
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── webpack.config.js
+│   │   ├── src/
+│   │   │   ├── config.ts
+│   │   │   └── index.ts
+│   │   └── player-app/
+│   │       ├── autorun.brs
+│   │       └── listener.js
+│   └── time_publisher-cpp-extension/ ← C++: requires BrightSign SDK
+│       ├── bsext_init
+│       ├── CMakeLists.txt
+│       └── src/main.cpp
 ```
-
-Expected output:
-```
-./CLAUDE.md
-./Dockerfile
-./LICENSE.txt
-./README.md
-./docs/Serial-Connection.md
-./docs/Un-Secure-Player.md
-./examples/common-scripts/make-extension-lvm
-./examples/common-scripts/make-extension-ubi
-./examples/common-scripts/pkg-dev.sh
-./examples/hello_world-go-extension/bsext_init
-./examples/hello_world-go-extension/main.go
-./examples/hello_world-java-extension/bsext_init
-./examples/hello_world-java-extension/Makefile
-./examples/hello_world-java-extension/pom.xml
-./examples/hello_world-java-extension/README.md
-./examples/hello_world-java-extension/src/main/java/com/brightsign/workshop/HelloExtension.java
-./examples/hello_world-ts-extension/bsext_init
-./examples/hello_world-ts-extension/package.json
-./examples/hello_world-ts-extension/src/index.ts
-./examples/hello_world-ts-extension/webpack.config.js
-./examples/time_publisher-cpp-extension/bsext_init
-./examples/time_publisher-cpp-extension/CMakeLists.txt
-./examples/time_publisher-cpp-extension/src/main.cpp
-```
-
-There is no build system at the root level yet. Each example in `examples/` is self-contained. The only shared code is the packaging scripts in `examples/common-scripts/`.
 
 In Module 4 you will copy the contents of `examples/hello_world-java-extension/` to the repo root and build from there. The Makefile in that example is designed to run from the repo root so it can reach `examples/common-scripts/`.
 
@@ -162,8 +167,10 @@ Expected output:
 ```
 Creating squashfs image...
 Generating install script...
-hello_world_go-20240315-143022.zip
+hello_world_go-1747123456.zip
 ```
+
+> **Note:** The timestamp in the ZIP filename is a Unix epoch value from `date +%s`, not a human-readable date.
 
 That ZIP file is your deployable extension artifact. Upload it to the player via the Control API.
 

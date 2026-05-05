@@ -130,18 +130,39 @@ Sub Main()
     reg.Write("dwse", "yes")
     reg.Write("curl_debug", "1")
     reg.Write("prometheus-node-exporter-port", "9100")
-    reg.Write("ssh", "22")
-    reg.Write("telnet_log_level", "7")
+    reg.write("ssh", "22")
+    reg.write("telnet_log_level", "7")
     reg.Flush()
 
-    CreateObject("roNetworkConfiguration", 0).SetupDWS({port: "80", open: "none"})
+    CreateObject("roNetworkConfiguration", 0).SetupDWS({port:"80", open:"none"})
 
-    n = CreateObject("roNetworkConfiguration", 0)
+    n=CreateObject("roNetworkConfiguration", 0)
     n.SetLoginPassword("none")
     n.Apply()
 
-    ShowMessage("Setup complete -- manually reboot the player to apply settings")
+    ShowMessage("now manually reboot the player...")
+
+    'DeleteFile("autorun.brs")
     sleep(50000)
+    'RebootSystem()
+End Sub
+
+Sub ShowMessage(msg)
+    gaa = GetGlobalAA()
+    videoMode = CreateObject("roVideoMode")
+    resX = videoMode.GetResX()
+    resY = videoMode.GetResY()
+    videoMode = invalid
+    r = CreateObject("roRectangle", 0, resY/2-resY/64, resX, resY/32)
+    twParams = CreateObject("roAssociativeArray")
+    twParams.LineCount = 1
+    twParams.TextMode = 2
+    twParams.Rotation = 0
+    twParams.Alignment = 1
+    gaa.tw = CreateObject("roTextWidget", r, 1, 2, twParams)
+    gaa.tw.PushString(msg)
+    gaa.tw.Show()
+    print msg
 End Sub
 ```
 
@@ -168,7 +189,7 @@ This one-time setup wrote the following registry keys and then the player was re
    ```
    ssh brightsign@$PLAYER_IP
    ```
-   Expected: shell prompt with no password required. Type `exit` to leave.
+   Expected: shell prompt with no SSH password (the autorun.brs called `SetLoginPassword("none")`). Type `exit` to leave.
 
    > **Note:** `exit` at the BrightSign shell (`BrightSign>`) reboots the player on a secure device. On these insecured players, `exit` drops to a Linux root shell (`#`). Type `exit` again to reboot.
 
@@ -194,7 +215,7 @@ Rather than cloning the extension template directly, you will create your own re
 
 1. Navigate to the extension template:
    ```
-   https://github.com/brightsign/extension-template
+   https://github.com/BrightDevelopers/extension-template
    ```
 
 2. Click the **"Use this template"** button (green, near the top right).

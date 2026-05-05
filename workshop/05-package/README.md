@@ -90,8 +90,10 @@ Parallel mksquashfs: Using 4 processors
 Creating 4.0 filesystem on ext_hello_extension.squashfs, block size 131072.
 [=======================================] 2/2 100%
 
-hello_extension-20260321-143022.zip
+hello_extension-1747123456.zip
 ```
+
+> **Note:** The timestamp in the ZIP filename is a Unix epoch value from `date +%s`, not a human-readable date.
 
 Verify the ZIP and its contents:
 
@@ -105,8 +107,8 @@ Expected ZIP contents:
 ```
   Length      Date    Time    Name
 ---------  ---------- -----   ----
-   131072  2026-03-21 14:30   ext_hello_extension.squashfs
-     2048  2026-03-21 14:30   ext_hello_extension_install-lvm.sh
+   131072  2026-05-13 14:30   ext_hello_extension.squashfs
+     2048  2026-05-13 14:30   ext_hello_extension_install-lvm.sh
 ---------                     -------
    133120                     2 files
 ```

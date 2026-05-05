@@ -37,10 +37,10 @@ Note the filename. You will reference it by the glob pattern `hello_extension-*.
 ## 6.2 Copy the ZIP to the Player
 
 ```
-scp hello_extension-*.zip admin@$PLAYER_IP:/usr/local/
+scp hello_extension-*.zip brightsign@$PLAYER_IP:/usr/local/
 ```
 
-Enter the SSH password when prompted. The default password is shown on the facilitator's screen or on the player's front display.
+No password is required — the player was configured with `SetLoginPassword("none")` during setup.
 
 Expected: a progress bar that completes without error.
 
@@ -51,7 +51,7 @@ Expected: a progress bar that completes without error.
 ## 6.3 SSH into the Player
 
 ```
-ssh admin@$PLAYER_IP
+ssh brightsign@$PLAYER_IP
 ```
 
 You are now on the player's BusyBox Linux shell. The prompt will look like:
@@ -107,7 +107,7 @@ Exit the SSH session. Wait 60–90 seconds for the player to complete its boot s
 After the player has rebooted, reconnect and check the process list:
 
 ```
-ssh admin@$PLAYER_IP
+ssh brightsign@$PLAYER_IP
 # ps aux | grep hello_extension
 ```
 

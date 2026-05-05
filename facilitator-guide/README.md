@@ -128,12 +128,13 @@ If Docker is unavailable, ensure these are installed on the workstation:
 
 ### Module 6: Extension fails to start after install
 
-- Most common cause: wrong `mainClass` in `manifest.json` — verify the exact fully-qualified `package.ClassName`.
+- Most common cause: `DAEMON_NAME` in `bsext_init` does not match the extension name passed to `pkg-dev.sh` — they must be identical.
 - Second most common cause: the JAR is not a fat JAR — the shaded JAR with all dependencies bundled is required.
-- Pull the extension logs to diagnose:
+- Run the extension in the foreground to see output directly:
 
   ```bash
-  curl http://$PLAYER_IP:8008/api/v1/extensions/hello-extension/logs
+  ssh brightsign@$PLAYER_IP
+  # /var/volatile/bsext/hello_extension/bsext_init run
   ```
 
 ### Module 9: webpack fails on Windows

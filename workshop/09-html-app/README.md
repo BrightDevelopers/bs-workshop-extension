@@ -227,7 +227,7 @@ Expected output:
 
 ```json
 {
-    "message": "Hello from BrightSign Extension",
+    "message": "Hello from BrightSign!",
     "uptime_seconds": 42
 }
 ```
