@@ -4,43 +4,31 @@
 
 ---
 
-## Stop and Remove the Extension
+## Uninstall the Extension
 
-1. SSH into the player and stop the extension:
+Run the uninstall script bundled inside the extension:
 
-   ```bash
-   ssh brightsign@$PLAYER_IP
-   # /var/volatile/bsext/hello_extension/bsext_init stop
-   ```
+```bash
+ssh brightsign@$PLAYER_IP
+# /var/volatile/bsext/ext_hello_extension/uninstall.sh
+```
 
-2. Unmount and remove the LVM volume:
+Expected:
 
-   ```bash
-   # umount /var/volatile/bsext/ext_hello_extension 2>/dev/null; rmdir /var/volatile/bsext/ext_hello_extension 2>/dev/null
-   # lvremove --yes /dev/mapper/bsos-ext_hello_extension
-   ```
-
-3. Verify the extension volume is gone:
-
-   ```bash
-   # ls /var/volatile/bsext/
-   ```
-
-   Expected: `hello_extension` no longer appears in the listing.
+```
+Uninstalling extension: hello_extension
+Extension hello_extension uninstalled. Reboot to complete removal.
+```
 
 ---
 
-## Restore Player Settings
+## Factory Reset the Player
 
-If the player is shared or will be used in a demo, restore its settings before handing it back.
+The cleanest way to return the player to a known state is a full factory reset. This removes all installed extensions, clears the registry keys written during setup, and restores secure boot behavior.
 
-1. Open `http://$PLAYER_IP` in a browser.
-2. Navigate to **Settings → Developer Options**.
-3. Disable **Local Extensions**.
-4. Disable **Insecure Content Loading**.
-5. Click **Save** / **Apply**.
+Consult the [Factory Reset Documentation](https://docs.brightsign.biz/space/DOC/1936916598/Factory+Reset+a+Player). A full hard factory reset (2-button approach) is recommended.
 
-> **Note:** Skip this step if the facilitator has told you to leave the player in dev mode for the next group.
+> **Note:** Skip the factory reset if your facilitator has told you to leave the player ready for the next group.
 
 ---
 
@@ -53,4 +41,4 @@ Over the course of this workshop you:
 - Built an HTML app that communicates with the extension over the player's local network.
 - Learned the production hardening steps required before any extension ships.
 
-The [extension-template](https://github.com/brightsign/extension-template) repo is your starting point for any future extension. The same workflow you practiced here applies to any program you package into it.
+The [extension-template](https://github.com/BrightDevelopers/extension-template) repo is your starting point for any future extension. The same workflow you practiced here applies to any program you package into it.

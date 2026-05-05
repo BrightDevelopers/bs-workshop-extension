@@ -58,13 +58,14 @@ All commands below run from the repo root (`/workspace` inside the container).
 mkdir -p install
 cp target/hello-extension-1.0.0.jar install/
 cp bsext_init install/
+cp examples/common-scripts/uninstall.sh install/
 ls install/
 ```
 
 Expected output:
 
 ```
-bsext_init  hello-extension-1.0.0.jar
+bsext_init  hello-extension-1.0.0.jar  uninstall.sh
 ```
 
 > **Warning:** Do not place files in `install/` that should not be on the player. The squashfs image is a snapshot of that directory. Credentials, test configs, and build artifacts have no place there.

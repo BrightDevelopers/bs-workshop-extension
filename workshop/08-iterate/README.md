@@ -72,22 +72,20 @@ SSH into the player:
 ssh brightsign@$PLAYER_IP
 ```
 
-Stop the extension process:
+Run the uninstall script bundled inside the extension:
 
 ```
-# /var/volatile/bsext/hello_extension/bsext_init stop
+# /var/volatile/bsext/ext_hello_extension/uninstall.sh
 ```
 
-Unmount and remove the LVM volume manually:
+Expected:
 
 ```
-# umount /var/volatile/bsext/ext_hello_extension 2>/dev/null; rmdir /var/volatile/bsext/ext_hello_extension 2>/dev/null
-# lvremove --yes /dev/mapper/bsos-ext_hello_extension
+Uninstalling extension: hello_extension
+Extension hello_extension uninstalled. Reboot to complete removal.
 ```
 
-Expected: `lvremove` confirms the logical volume was removed. You can now log out or leave the session open for the next step.
-
-> **Note:** The install script has no `uninstall` argument — it only installs. Removal requires stopping the extension, unmounting the squashfs volume, and removing the LVM logical volume manually as shown above. The `bsext_init stop` call before removal is required because the volume cannot be removed while it is mounted.
+> **Note:** `uninstall.sh` handles everything — it stops the process, unmounts the squashfs volume, and removes the LVM logical volume. It was bundled into the squashfs image during packaging and lives at the extension's mount point.
 
 ---
 

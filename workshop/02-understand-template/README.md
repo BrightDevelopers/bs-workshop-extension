@@ -28,7 +28,8 @@ extension-template/
 │   ├── common-scripts/          ← shared packaging scripts (all languages use these)
 │   │   ├── make-extension-lvm
 │   │   ├── make-extension-ubi
-│   │   └── pkg-dev.sh
+│   │   ├── pkg-dev.sh
+│   │   └── uninstall.sh         ← bundled with every extension; removes it from the player
 │   ├── hello_world-java-extension/   ← Java: HTTP server, bundled JRE
 │   │   ├── bsext_init
 │   │   ├── Makefile

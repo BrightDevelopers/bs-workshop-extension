@@ -72,7 +72,7 @@ ssh brightsign@$PLAYER_IP "netstat -tlnp | grep 8080"
 
 ```
 ssh brightsign@$PLAYER_IP
-# /var/volatile/bsext/hello_extension/bsext_init run
+# /var/volatile/bsext/ext_hello_extension/bsext_init run
 ```
 
 Watch the output. Press Ctrl+C to stop.
