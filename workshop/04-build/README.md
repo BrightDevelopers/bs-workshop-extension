@@ -54,7 +54,6 @@ cp -r examples/hello_world-java-extension/. .
 Verify the key project files are in place:
 
 ```
-cd hello_world-java-extension/
 ls Makefile bsext_init pom.xml src/main/java/com/brightsign/workshop/HelloExtension.java
 ```
 

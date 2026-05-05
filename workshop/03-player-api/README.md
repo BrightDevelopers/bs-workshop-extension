@@ -45,7 +45,7 @@ Port 22 is how you get in and move files. Port 8080 is how you talk to your exte
    $ ssh brightsign@$PLAYER_IP
    ```
 
-   No password is required — the player was configured with `SetLoginPassword("none")` during setup.
+   The player was configured with `SetLoginPassword("password")` during setup.
 
    You will see log output from the running autorun. Work through the prompt sequence to reach the Linux shell:
 
