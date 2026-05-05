@@ -52,7 +52,7 @@ make-extension-lvm  make-extension-ubi  pkg-dev.sh
 
 The packaging script reads from an `install/` directory you provide. Everything in that directory becomes the squashfs image.
 
-All commands below run from the repo root (`/workspace` inside the container).
+All commands below run from the java extension directory (`/workspace/hellow_world-java-extension/` inside the container).
 
 ```
 mkdir -p install
@@ -65,7 +65,7 @@ ls install/
 Expected output:
 
 ```
-bsext_init  hello-extension-1.0.0.jar  uninstall.sh
+bsext_init  hello-extension-1.0.0.jar  uninstall.sh jre
 ```
 
 > **Warning:** Do not place files in `install/` that should not be on the player. The squashfs image is a snapshot of that directory. Credentials, test configs, and build artifacts have no place there.

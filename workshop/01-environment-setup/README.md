@@ -137,7 +137,7 @@ Sub Main()
     CreateObject("roNetworkConfiguration", 0).SetupDWS({port:"80", open:"none"})
 
     n=CreateObject("roNetworkConfiguration", 0)
-    n.SetLoginPassword("none")
+    n.SetLoginPassword("password")
     n.Apply()
 
     ShowMessage("now manually reboot the player...")

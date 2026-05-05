@@ -110,7 +110,7 @@ After the player has rebooted, reconnect and check the process list:
 
 ```
 ssh brightsign@$PLAYER_IP
-# ps aux | grep hello_extension
+# ps | grep hello_extension
 ```
 
 Expected: a Java process running `hello-extension-1.0.0.jar` appears in the output.
