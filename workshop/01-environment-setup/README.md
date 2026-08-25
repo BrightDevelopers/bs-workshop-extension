@@ -170,7 +170,7 @@ This one-time setup wrote the following registry keys and then the player was re
 
 | Feature | Value |
 |---|---|
-| Local DWS | `http://<player_ip>/` — no login required |
+| Local DWS | `http://<PLAYER_IP>/` — no login required |
 | SSH | port 22 — no password required |
 | BrightScript debug | enabled |
 | curl verbose logging | enabled |

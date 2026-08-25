@@ -39,7 +39,7 @@ The HTML app lives in its own repository, separate from the extension repo.
 
 ```
 cd /workspace
-git clone https://github.com/BrightSign-Playground/bs-extension-workshop-html-app
+git clone https://github.com/BrightDevelopers/bs-extension-workshop-html-app
 cd bs-extension-workshop-html-app
 ```
 

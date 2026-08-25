@@ -4,6 +4,14 @@ A self-guided, hands-on workshop for building, packaging, deploying, and iterati
 
 **Total time:** ~3.5 hours
 
+> **Looking for a complete solution?**
+> [**Argus**](https://github.com/brightsign/argus-audience-measurement-extension) is BrightSign's
+> reference audience-measurement application: person counting, gaze detection, dwell time,
+> entry/exit events, and movement analytics, published over MQTT and Prometheus. This repository
+> is a single-purpose example of one piece of that system.
+>
+> *Argus is what a finished, real-world extension looks like once you know the workflow.*
+
 ---
 
 ## What You Will Build
@@ -90,7 +98,9 @@ See [facilitator-guide/README.md](facilitator-guide/README.md) for pre-workshop 
 ## See Also
 
 - [extension-template](https://github.com/BrightDevelopers/extension-template) — the starter repo used throughout this workshop
-- [brightsign-npu-gaze-extension](https://github.com/brightsign/brightsign-npu-gaze-extension) — production extension built on the same template
+- [argus-audience-measurement-extension](https://github.com/brightsign/argus-audience-measurement-extension) — a complete, real-world extension built on this same template; read it once you know the workflow
+- [brightsign-npu-gaze-extension](https://github.com/brightsign/brightsign-npu-gaze-extension) — a single-model example extension (ALPHA/BETA, educational)
+- [brightsign-npu-general](https://github.com/brightsign/brightsign-npu-general) — background on BrightSign NPUs and model packaging
 
 ---
 
