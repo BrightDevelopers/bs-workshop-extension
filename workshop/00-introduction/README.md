@@ -101,7 +101,7 @@ graph TB
         html["index.html\nrenders message and uptime on screen"]
         ext -->|"fetch every 1s"| html
     end
-    ws["Your Workstation"] -.->|"curl http://player-ip:8080/"| ext
+    ws["Your Workstation"] -.->|"curl http://<PLAYER_IP>:8080/"| ext
 ```
 
 ---

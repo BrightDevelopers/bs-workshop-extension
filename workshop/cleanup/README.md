@@ -26,7 +26,7 @@ Extension hello_extension uninstalled. Reboot to complete removal.
 
 The cleanest way to return the player to a known state is a full factory reset. This removes all installed extensions, clears the registry keys written during setup, and restores secure boot behavior.
 
-Consult the [Factory Reset Documentation](https://docs.brightsign.biz/space/DOC/1936916598/Factory+Reset+a+Player). A full hard factory reset (2-button approach) is recommended.
+Consult the [BrightSign documentation](https://docs.brightsign.biz) and search for "Factory Reset a Player". A full hard factory reset (2-button approach) is recommended.
 
 > **Note:** Skip the factory reset if your facilitator has told you to leave the player ready for the next group.
 
